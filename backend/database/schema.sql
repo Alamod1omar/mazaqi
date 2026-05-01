@@ -116,3 +116,14 @@ CREATE TABLE IF NOT EXISTS user_otps (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Delivery Zones Table
+CREATE TABLE IF NOT EXISTS delivery_zones (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    zone_name TEXT NOT NULL,
+    delivery_fee REAL DEFAULT 0,
+    free_delivery_minimum REAL DEFAULT 0,
+    estimated_delivery_time TEXT,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
