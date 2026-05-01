@@ -1,0 +1,13 @@
+{
+  "name": "mazaqi-root",
+  "version": "1.0.0",
+  "description": "Root package for Mazaki Cafeteria",
+  "scripts": {
+    "install-backend": "cd backend && npm install",
+    "build": "npm run install-backend",
+    "start": "cd backend && node server.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
