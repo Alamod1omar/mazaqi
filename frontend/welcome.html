@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحباً بك في بوفية مذاقي</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=1200');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .welcome-box {
+            padding: 2rem;
+            max-width: 500px;
+        }
+        .logo-large {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-container);
+            margin-bottom: 1rem;
+        }
+        .slogan {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .btn-welcome {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .btn-primary { background: var(--primary-container); color: white; }
+        .btn-secondary { background: white; color: var(--primary-container); }
+        .btn-guest { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(10px); }
+        
+        .btn-welcome:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div class="welcome-box">
+        <div class="logo-large">بوفية مذاقي</div>
+        <div class="slogan">"طعمك المفضل… صار أقرب"</div>
+        
+        <button onclick="markVisited('login.html')" class="btn-welcome btn-primary w-full">تسجيل الدخول</button>
+        <button onclick="markVisited('register.html')" class="btn-welcome btn-secondary w-full">إنشاء حساب جديد</button>
+        <button onclick="markVisited('index.html')" class="btn-welcome btn-guest w-full">الدخول كزائر</button>
+    </div>
+
+    <script>
+        function markVisited(target) {
+            localStorage.setItem('mazaki_visited', 'true');
+            window.location.href = target;
+        }
+
+        if (localStorage.getItem('mazaki_token')) {
+            localStorage.setItem('mazaki_visited', 'true');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

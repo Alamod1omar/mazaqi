@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>تم استلام طلبك - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#964900",
+                        "primary-container": "#f57c00",
+                        "background": "#f4faff",
+                        "success": "#22c55e"
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Almarai', sans-serif;
+        }
+
+        .success-card {
+            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            .bg-background {
+                background: white !important;
+            }
+
+            .success-card {
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #f57c00;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #e65100;
+        }
+
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #f57c00 #f1f1f1;
+        }
+    </style>
+</head>
+
+<body class="bg-background min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden no-scrollbar">
+    <!-- Top Navigation Placeholder -->
+    <div id="top-nav" class="w-full no-print"></div>
+
+    <div id="loading" class="text-center no-print">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p class="mt-4 text-gray-500">جاري تحميل تفاصيل الطلب...</p>
+    </div>
+
+    <div id="error-view" class="hidden text-center max-w-md bg-white p-8 rounded-3xl shadow-lg no-print">
+        <span class="material-symbols-outlined text-6xl text-red-500 mb-4">error</span>
+        <h2 class="text-2xl font-bold mb-2">لم يتم العثور على الطلب</h2>
+        <p class="text-gray-500 mb-8">عذراً، لا يمكننا العثور على تفاصيل هذا الطلب حالياً.</p>
+        <a href="menu.html"
+            class="inline-block bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary-container transition-all">العودة
+            إلى المنيو</a>
+    </div>
+
+    <div id="success-view" class="hidden w-full max-w-lg success-card mx-auto flex items-center justify-center">
+        <div
+            class="bg-white rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)] overflow-hidden border border-gray-50 flex flex-col h-[70vh] w-full">
+            <!-- Success Header (Fixed) -->
+            <div class="bg-white p-4 text-center border-b border-gray-50 relative flex-shrink-0">
+                <div class="absolute top-2 left-2 no-print">
+                    <button onclick="window.print()"
+                        class="w-8 h-8 rounded-full bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                        <span class="material-symbols-outlined text-sm">print</span>
+                    </button>
+                </div>
+                <div class="mb-2 flex flex-col items-center justify-center">
+                    <div class="relative inline-block">
+                        <div class="w-24 h-24 mx-auto flex items-center justify-center bg-green-50 rounded-full mb-2">
+                             <span class="material-symbols-outlined text-5xl text-success">task_alt</span>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-sm">
+                             <div class="bg-primary w-6 h-6 rounded-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-[12px]">star</span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                <h1 class="text-xl font-black text-gray-900">تم استلام طلبك بنجاح!</h1>
+            </div>
+
+            <!-- Scrollable Content Section -->
+            <div class="overflow-y-auto p-5 space-y-5 custom-scrollbar">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center pb-4 border-b border-gray-50">
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">رقم الطلب</p>
+                        <p class="font-black text-sm" id="res-order-id">#...</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">الحالة</p>
+                        <p class="font-black text-sm text-blue-600" id="res-status">جديد</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">الإجمالي</p>
+                        <p class="font-black text-sm text-primary" id="res-total">0 ريال</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">الدفع</p>
+                        <p class="font-black text-sm" id="res-payment">...</p>
+                    </div>
+                </div>
+
+
+
+                <!-- Delivery Details (Conditional) -->
+                <div id="delivery-info" class="hidden bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                    <h3 class="font-bold mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">local_shipping</span>
+                        تفاصيل التوصيل
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-400">العنوان</p>
+                            <p class="font-bold" id="res-address">...</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">وقت التوصيل المتوقع</p>
+                            <p id="res-est-time" class="font-bold text-success">20 - 40 دقيقة</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">رسوم التوصيل</p>
+                            <p class="font-bold" id="res-delivery-fee">0 ريال</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pickup Details (Conditional) -->
+                <div id="pickup-info" class="hidden bg-orange-50 rounded-2xl p-6 border border-orange-100 text-center">
+                    <span class="material-symbols-outlined text-4xl text-primary mb-2">storefront</span>
+                    <p class="font-bold text-primary">يمكنك استلام طلبك من البوفية عند جاهزيته</p>
+                </div>
+
+                <!-- Items Brief -->
+                <div class="border-t pt-8">
+                    <h3 class="font-bold mb-4">ملخص الوجبات</h3>
+                    <div id="res-items" class="space-y-3">
+                        <!-- Dynamic Items -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-4 no-print">
+                    <a id="track-btn" href="#"
+                        class="bg-primary text-white text-center py-4 rounded-2xl font-bold shadow-lg shadow-orange-200 hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">map</span>
+                        تتبع الطلب
+                    </a>
+                    <a href="menu.html"
+                        class="bg-white border-2 border-gray-100 text-gray-700 text-center py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all">
+                        العودة للمنيو
+                    </a>
+                    <a href="orders.html"
+                        class="bg-white border-2 border-gray-100 text-gray-700 text-center py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all">
+                        طلباتي
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+
+            if (!orderId) {
+                showError();
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/orders/${orderId}`);
+                if (!res.ok) {
+                    showError();
+                    return;
+                }
+
+                const order = await res.json();
+                renderOrder(order);
+            } catch (err) {
+                showError();
+            }
+        });
+
+        function showError() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error-view').classList.remove('hidden');
+        }
+
+        function renderOrder(order) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('success-view').classList.remove('hidden');
+
+            document.getElementById('res-order-id').innerText = `#${order.id}`;
+            document.getElementById('res-status').innerText = order.status;
+            document.getElementById('res-total').innerText = `${order.total} ريال`;
+
+            const paymentMethods = {
+                'cod': 'دفع عند الاستلام',
+                'alamqi': 'تحويل العمقي',
+                'bindoal': 'تحويل بن دول'
+            };
+            document.getElementById('res-payment').innerText = paymentMethods[order.payment_method] || order.payment_method;
+
+            document.getElementById('track-btn').href = `tracking.html?id=${order.id}`;
+
+
+
+            // Trigger confetti
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#964900', '#f57c00', '#22c55e']
+            });
+
+            if (order.order_type === 'delivery') {
+                document.getElementById('delivery-info').classList.remove('hidden');
+                document.getElementById('res-address').innerText = order.address;
+                document.getElementById('res-delivery-fee').innerText = `${order.delivery_fee} ريال`;
+                document.getElementById('res-est-time').innerText = order.estimated_delivery_time || '20-30 دقيقة';
+            } else {
+                document.getElementById('pickup-info').classList.remove('hidden');
+            }
+
+            const itemsContainer = document.getElementById('res-items');
+            itemsContainer.innerHTML = order.items.map(item => `
+            <div class="flex justify-between items-center text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="bg-gray-100 px-2 py-0.5 rounded-lg text-gray-600 font-bold">${item.quantity}x</span>
+                    <span class="text-gray-700">${item.product_name}</span>
+                </div>
+                <span class="font-bold">${item.price * item.quantity} ريال</span>
+            </div>
+        `).join('');
+        }
+
+
+    </script>
+</body>
+
+</html>

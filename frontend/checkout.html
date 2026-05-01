@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>بوفية مذاقي - إتمام الطلب</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#572800",
+                        "surface-bright": "#f4faff",
+                        "primary-fixed": "#ffdcc6",
+                        "background": "#f4faff",
+                        "secondary-fixed-dim": "#cbc6bf",
+                        "surface": "#f4faff",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#615e59",
+                        "primary": "#964900",
+                        "primary-fixed-dim": "#ffb786",
+                        "surface-container-highest": "#d7e4ec",
+                        "on-secondary-container": "#67645f",
+                        "on-secondary-fixed-variant": "#494642",
+                        "on-surface-variant": "#574235",
+                        "surface-variant": "#d7e4ec",
+                        "on-background": "#111d23",
+                        "primary-container": "#f57c00",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#ffb786",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "on-tertiary-fixed": "#410003",
+                        "surface-tint": "#964900",
+                        "outline": "#8b7263",
+                        "on-primary-fixed": "#311300",
+                        "inverse-surface": "#263238",
+                        "surface-dim": "#cfdce4",
+                        "surface-container": "#e3f0f8",
+                        "secondary-container": "#e7e2db",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#e6f3fb",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#e9f6fd",
+                        "surface-container-high": "#ddeaf2",
+                        "outline-variant": "#dec1af",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#723600",
+                        "on-secondary-fixed": "#1d1b17",
+                        "on-tertiary-fixed": "#410003",
+                        "tertiary-fixed": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "on-tertiary-container": "#710009",
+                        "tertiary": "#ba1a20",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#e7e2db",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#ff7067",
+                        "on-surface": "#111d23"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "1rem",
+                        "container-max": "1200px",
+                        "section-gap": "4rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Almarai"],
+                        "body-md": ["Almarai"],
+                        "display-md": ["Almarai"],
+                        "headline-sm": ["Almarai"],
+                        "display-lg": ["Almarai"],
+                        "label-lg": ["Almarai"],
+                        "label-sm": ["Almarai"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "label-lg": ["14px", { "lineHeight": "1.0", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Almarai', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+    <!-- Top Navigation -->
+    <nav id="top-nav" class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100">
+    </nav>
+
+    <!-- Mobile Bottom Navigation -->
+    <div id="bottom-nav"
+        class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white rounded-t-3xl z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t">
+    </div>
+    <main class="max-w-container-max mx-auto px-margin-mobile md:px-6 pt-24 pb-12">
+        <div class="mb-8">
+            <h1 class="font-display-lg text-display-lg text-on-background mb-2">إتمام الطلب</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">الرجاء إكمال البيانات أدناه لتأكيد طلبك.</p>
+        </div>
+        <form id="checkout-form" class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+            <!-- Main Checkout Form -->
+            <div class="lg:col-span-8 space-y-8">
+                <!-- Customer Info -->
+                <section
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-highest">
+                    <h2 class="font-headline-sm text-headline-sm text-on-background mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+                        المعلومات الشخصية
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">الاسم
+                                الكامل</label>
+                            <input id="customer-name" required
+                                class="w-full bg-surface-container border-transparent focus:border-primary focus:bg-surface-container-lowest focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-on-background"
+                                placeholder="أدخل اسمك الكريم" type="text" />
+                        </div>
+                        <div>
+                            <label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">رقم
+                                الجوال</label>
+                            <input id="customer-phone" required
+                                class="w-full bg-surface-container border-transparent focus:border-primary focus:bg-surface-container-lowest focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-on-background"
+                                dir="ltr" placeholder="05x xxx xxxx" style="text-align: right;" type="tel" />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">البريد الإلكتروني</label>
+                            <input id="customer-email" required
+                                class="w-full bg-surface-container border-transparent focus:border-primary focus:bg-surface-container-lowest focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-on-background"
+                                placeholder="example@mail.com" type="email" />
+                        </div>
+                    </div>
+                </section>
+                <!-- Order Type (Delivery/Pickup) -->
+                <section
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-highest">
+                    <h2 class="font-headline-sm text-headline-sm text-on-background mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary"
+                            data-icon="local_shipping">local_shipping</span>
+                        طريقة الاستلام
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="relative cursor-pointer">
+                            <input checked="" class="peer sr-only" name="delivery_type" type="radio" value="delivery"
+                                onchange="toggleAddress(true)" />
+                            <div
+                                class="rounded-lg border-2 border-surface-container p-4 hover:bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary-fixed/20 transition-all flex flex-col items-center justify-center gap-2 text-center h-full">
+                                <span
+                                    class="material-symbols-outlined text-2xl text-on-surface-variant peer-checked:text-primary"
+                                    data-icon="moped">moped</span>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface peer-checked:text-primary-fixed-variant">توصيل</span>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer">
+                            <input class="peer sr-only" name="delivery_type" type="radio" value="pickup"
+                                onchange="toggleAddress(false)" />
+                            <div
+                                class="rounded-lg border-2 border-surface-container p-4 hover:bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary-fixed/20 transition-all flex flex-col items-center justify-center gap-2 text-center h-full">
+                                <span
+                                    class="material-symbols-outlined text-2xl text-on-surface-variant peer-checked:text-primary"
+                                    data-icon="storefront">storefront</span>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface peer-checked:text-primary-fixed-variant">استلام
+                                    من الفرع</span>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- Delivery Address -->
+                    <div id="address-section" class="mt-6 pt-6 border-t border-surface-container-high">
+                        <div class="space-y-6">
+                            <!-- Zone Selection -->
+                            <div>
+                                <label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">منطقة
+                                    التوصيل</label>
+                                <select id="delivery-zone-select" onchange="updateDeliveryFee()"
+                                    class="w-full bg-surface-container border-transparent focus:border-primary focus:bg-surface-container-lowest focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-on-background">
+                                    <option value="">-- اختر منطقة التوصيل --</option>
+                                </select>
+                                <!-- Free Delivery Progress -->
+                                <div id="delivery-info-card" class="hidden mt-3 p-4 rounded-xl border transition-all">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <div class="flex flex-col gap-1">
+                                            <span id="zone-fee-text" class="text-xs font-bold text-gray-500"></span>
+                                            <span id="zone-time-text" class="text-[10px] text-primary font-black"></span>
+                                        </div>
+                                        <span id="free-delivery-badge"
+                                            class="hidden px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-[10px] font-black">توصيل
+                                            مجاني</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                                        <div id="free-delivery-progress"
+                                            class="bg-primary h-full transition-all duration-500" style="width: 0%">
+                                        </div>
+                                    </div>
+                                    <p id="delivery-hint-text" class="text-[11px] mt-2 font-bold"></p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">اختر من عناوينك المحفوظة</label>
+                                <div id="saved-addresses-selection" class="flex flex-wrap gap-3 mb-4">
+                                    <!-- Selection cards will be injected here by JS -->
+                                </div>
+                                
+                                <label class="block font-label-lg text-label-lg text-on-surface-variant mb-2">العنوان التفصيلي (الشارع، المعلم، رقم المنزل)</label>
+                                <textarea id="address-details" required
+                                    class="w-full bg-surface-container border-transparent focus:border-primary focus:bg-surface-container-lowest focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-on-background"
+                                    placeholder="مثال: شارع الجامعة، بجوار المسجد، منزل رقم 5" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Payment Method -->
+                <section
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-highest">
+                    <h2 class="font-headline-sm text-headline-sm text-on-background mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+                        طريقة الدفع
+                    </h2>
+                    <div class="space-y-3">
+                        <!-- Cash on Delivery -->
+                        <label
+                            class="flex items-center p-4 border border-surface-container rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                            <input checked="" class="w-5 h-5 text-primary border-outline focus:ring-primary"
+                                name="payment_method" type="radio" value="cod" onchange="toggleBankDetails(false)" />
+                            <span class="mr-4 flex items-center gap-3 w-full">
+                                <span class="material-symbols-outlined text-on-surface-variant">payments</span>
+                                <span class="font-body-md text-body-md text-on-surface">الدفع عند الاستلام</span>
+                            </span>
+                        </label>
+
+                        <!-- Al-Amqi -->
+                        <label
+                            class="flex items-center p-4 border border-surface-container rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                            <input class="w-5 h-5 text-primary border-outline focus:ring-primary" name="payment_method"
+                                type="radio" value="alamqi" onchange="toggleBankDetails(true, 'alamqi')" />
+                            <span class="mr-4 flex items-center gap-3 w-full">
+                                <span class="material-symbols-outlined text-on-surface-variant">account_balance</span>
+                                <span class="font-body-md text-body-md text-on-surface">تحويل عبر شركة العمقي</span>
+                            </span>
+                        </label>
+
+                        <!-- Bin Doal -->
+                        <label
+                            class="flex items-center p-4 border border-surface-container rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+                            <input class="w-5 h-5 text-primary border-outline focus:ring-primary" name="payment_method"
+                                type="radio" value="bindoal" onchange="toggleBankDetails(true, 'bindoal')" />
+                            <span class="mr-4 flex items-center gap-3 w-full">
+                                <span
+                                    class="material-symbols-outlined text-on-surface-variant">account_balance_wallet</span>
+                                <span class="font-body-md text-body-md text-on-surface">تحويل عبر شركة بن دول</span>
+                            </span>
+                        </label>
+
+                        <!-- Bank Details Info -->
+                        <div id="bank-details"
+                            style="display:none;"
+                            class="mt-4 p-5 bg-orange-50 rounded-2xl border border-orange-100 shadow-sm space-y-4">
+                            <h4 class="font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">info</span>
+                                معلومات التحويل
+                            </h4>
+                            <div class="space-y-3">
+                                <div class="bg-white p-3 rounded-xl border border-orange-200">
+                                    <p class="text-[10px] text-gray-400 mb-1">اسم المستلم</p>
+                                    <div class="flex items-center justify-between">
+                                        <p id="checkout-acc-name" class="font-bold text-on-surface">احمد سعيد محمد
+                                            العمودي</p>
+                                        <button type="button" onclick="copyToClipboard('checkout-acc-name')"
+                                            class="text-primary hover:bg-orange-50 p-1.5 rounded-lg transition-colors">
+                                            <span class="material-symbols-outlined text-sm">content_copy</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded-xl border border-orange-200">
+                                    <p class="text-[10px] text-gray-400 mb-1">رقم الحساب (<span
+                                            id="bank-name-label">العمقي</span>)</p>
+                                    <div class="flex items-center justify-between">
+                                        <p id="bank-acc-number" class="font-bold text-xl text-primary tracking-widest">
+                                        </p>
+                                        <button type="button" onclick="copyToClipboard('bank-acc-number')"
+                                            class="text-primary hover:bg-orange-50 p-1.5 rounded-lg transition-colors">
+                                            <span class="material-symbols-outlined text-sm">content_copy</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="border-t border-orange-100 pt-4">
+                                <p class="text-xs font-black text-primary mb-3 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">edit_document</span>
+                                    أدخل بيانات التحويل لتأكيد طلبك
+                                </p>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-600 mb-1">رقم السند <span class="text-red-500">*</span></label>
+                                        <input id="transfer-reference" type="text"
+                                            class="w-full bg-white border-2 border-orange-200 focus:border-primary focus:ring-0 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 placeholder-gray-300 transition-all"
+                                            placeholder="أدخل رقم السند أو رقم العملية" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-600 mb-1">اسم المرسل <span class="text-red-500">*</span></label>
+                                        <input id="transfer-sender" type="text"
+                                            class="w-full bg-white border-2 border-orange-200 focus:border-primary focus:ring-0 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 placeholder-gray-300 transition-all"
+                                            placeholder="اسم الشخص الذي أجرى التحويل" />
+                                    </div>
+                                </div>
+                                <p class="text-[11px] text-gray-400 mt-3 italic">
+                                    * لن يتم تأكيد طلبك إلا بعد إدخال هذه البيانات.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- Order Summary Sidebar -->
+            <div class="lg:col-span-4">
+                <div
+                    class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-highest sticky top-24">
+                    <h2 class="font-headline-sm text-headline-sm text-on-background mb-6">ملخص الطلب</h2>
+                    <!-- Cart Items Summary -->
+                    <div id="checkout-items" class="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
+                        <!-- Dynamic Items -->
+                    </div>
+                    <hr class="border-surface-container-high mb-6" />
+                    <!-- Totals -->
+                    <div class="space-y-3 mb-8">
+                        <div
+                            class="flex justify-between items-center font-body-md text-body-md text-on-surface-variant">
+                            <span>المجموع الفرعي</span>
+                            <span id="subtotal">0 رس</span>
+                        </div>
+
+                        <!-- Coupon Section -->
+                        <div
+                            class="bg-surface-container p-4 rounded-xl border border-dashed border-outline-variant my-2">
+                            <label class="text-[10px] font-black text-on-surface-variant block mb-2 uppercase">هل لديك
+                                كود خصم؟</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="coupon-input" placeholder="أدخل الكود..."
+                                    class="flex-1 bg-surface-container-lowest border-surface-container-highest rounded-lg py-2 px-3 text-xs focus:ring-primary focus:border-primary uppercase">
+                                <button type="button" onclick="applyCoupon()"
+                                    class="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold hover:bg-primary/90 transition-all">تطبيق</button>
+                            </div>
+                            <div id="coupon-message" class="text-[10px] mt-2 hidden"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-primary font-bold hidden" id="discount-row">
+                            <span>خصم الكوبون</span>
+                            <span id="discount-amount">-0 ريال</span>
+                        </div>
+
+                        <div
+                            class="flex justify-between items-center font-body-md text-body-md text-on-surface-variant">
+                            <span>رسوم التوصيل</span>
+                            <span id="delivery-fee">0 رس</span>
+                        </div>
+                        <div
+                            class="flex justify-between items-center font-headline-sm text-headline-sm text-primary pt-3 border-t border-surface-container-high">
+                            <span>الإجمالي</span>
+                            <span id="total-price">0 رس</span>
+                        </div>
+                    </div>
+                    <!-- Submit Button -->
+                    <button type="submit"
+                        class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-lg text-label-lg py-4 rounded-lg shadow-sm transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+                        تأكيد الطلب
+                    </button>
+                    <p class="font-label-sm text-label-sm text-center text-on-surface-variant mt-4">
+                        بالضغط على "تأكيد الطلب"، فإنك توافق على الشروط والأحكام.
+                    </p>
+                </div>
+            </div>
+        </form>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="bg-gray-50 dark:bg-gray-950 w-full py-12 border-t border-gray-100 dark:border-gray-800 flex flex-col items-center gap-6 mt-12">
+        <div class="font-bold text-gray-900 dark:text-white font-display-md text-display-md mb-2">بوفية مذاقي</div>
+        <div class="flex gap-6">
+            <a class="text-sm text-gray-500 hover:text-orange-500 font-label-lg text-label-lg underline" href="#">سياسة
+                الخصوصية</a>
+            <a class="text-sm text-gray-500 hover:text-orange-500 font-label-lg text-label-lg underline" href="#">الشروط
+                والأحكام</a>
+            <a class="text-sm text-gray-500 hover:text-orange-500 font-label-lg text-label-lg underline"
+                href="contact.html">اتصل بنا</a>
+        </div>
+        <script src="js/customer-nav.js"></script>
+        <p class="text-sm text-gray-500 font-body-sm text-body-sm">© 2024 بوفية مذاقي. جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                window.location.href = 'menu.html';
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('mazaki_user'));
+            if (user) {
+                document.getElementById('customer-name').value = user.full_name;
+                document.getElementById('customer-phone').value = user.phone;
+                if (user.email) document.getElementById('customer-email').value = user.email;
+            }
+
+            renderSummary();
+            loadDeliveryZones();
+            checkCafeteriaStatus();
+            fetchSavedAddresses();
+        });
+
+        async function fetchSavedAddresses() {
+            const token = localStorage.getItem('mazaki_token');
+            const container = document.getElementById('saved-addresses-selection');
+            const hiddenInput = document.getElementById('address-details');
+
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/users/addresses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const addresses = await res.json();
+                    if (addresses.length > 0) {
+                        container.innerHTML = addresses.map((addr, idx) => `
+                            <div onclick="selectAddress(this, '${addr.address_text}')" 
+                                class="address-chip px-4 py-2 rounded-full border-2 border-gray-100 bg-white cursor-pointer hover:border-primary/50 transition-all text-xs font-bold text-gray-600 whitespace-nowrap">
+                                عنوان ${idx + 1}
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = `
+                            <div class="text-[10px] text-orange-500 bg-orange-50 px-3 py-2 rounded-lg border border-orange-100 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">info</span>
+                                لا توجد عناوين محفوظة
+                            </div>`;
+                    }
+                }
+            } catch (err) { console.error('Error fetching addresses:', err); }
+        }
+
+        window.selectAddress = function(element, text) {
+            // Reset all chips
+            document.querySelectorAll('.address-chip').forEach(chip => {
+                chip.classList.remove('border-primary', 'bg-orange-50', 'text-primary');
+                chip.classList.add('border-gray-100', 'bg-white', 'text-gray-600');
+            });
+
+            // Highlight selected chip
+            element.classList.remove('border-gray-100', 'bg-white', 'text-gray-600');
+            element.classList.add('border-primary', 'bg-orange-50', 'text-primary');
+
+            // Update textarea
+            document.getElementById('address-details').value = text;
+        }
+
+        async function checkCafeteriaStatus() {
+            try {
+                const res = await fetch('/api/settings');
+                const settings = await res.json();
+                if (settings.is_open === 0) {
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitBtn.innerHTML = '<span class="material-symbols-outlined">block</span> استقبال الطلبات متوقف حالياً';
+
+                    const form = document.getElementById('checkout-form');
+                    const warning = document.createElement('div');
+                    warning.className = 'col-span-full bg-red-50 text-red-600 p-4 rounded-xl font-bold text-center mb-6 border border-red-100 flex items-center justify-center gap-2';
+                    warning.innerHTML = '<span class="material-symbols-outlined">info</span> نعتذر، البوفية لا تستقبل طلبات في الوقت الحالي. يرجى المحاولة لاحقاً.';
+                    form.prepend(warning);
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        let deliveryZones = [];
+
+        async function loadDeliveryZones() {
+            try {
+                const res = await fetch('/api/delivery-zones');
+                deliveryZones = await res.json();
+                const select = document.getElementById('delivery-zone-select');
+                select.innerHTML = '<option value="">-- اختر منطقة التوصيل --</option>' +
+                    deliveryZones.map(z => `<option value="${z.id}">${z.zone_name}</option>`).join('');
+
+                // Auto-select user zone
+                const user = JSON.parse(localStorage.getItem('mazaki_user'));
+                if (user && user.delivery_zone) {
+                    const matchedZone = deliveryZones.find(z => z.zone_name === user.delivery_zone);
+                    if (matchedZone) {
+                        select.value = matchedZone.id;
+                        updateDeliveryFee();
+                    }
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function renderSummary() {
+            const container = document.getElementById('checkout-items');
+            container.innerHTML = cart.map(item => `
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="font-label-lg text-label-lg text-on-background bg-surface-container px-2 py-1 rounded">${item.quantity}x</span>
+                    <span class="font-body-md text-body-md text-on-surface">${item.name}</span>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">${item.price * item.quantity} رس</span>
+            </div>
+        `).join('');
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('subtotal').innerText = `${subtotal} رس`;
+
+            // Update totals based on current selections
+            updateDeliveryFee();
+        }
+
+        let appliedCoupon = null;
+
+        async function applyCoupon() {
+            const codeInput = document.getElementById('coupon-input');
+            const code = codeInput.value.trim().toUpperCase();
+            const messageEl = document.getElementById('coupon-message');
+
+            if (!code) return;
+
+            try {
+                const res = await fetch('/api/offers');
+                const allOffers = await res.json();
+                const now = new Date();
+
+                const coupon = allOffers.find(o =>
+                    o.code && o.code.toUpperCase() === code &&
+                    o.is_active &&
+                    (!o.end_date || new Date(o.end_date) > now)
+                );
+
+                if (!coupon) {
+                    messageEl.innerText = 'كود الخصم غير صحيح أو منتهي الصلاحية';
+                    messageEl.className = 'text-[10px] mt-2 text-error block';
+                    appliedCoupon = null;
+                } else {
+                    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    if (coupon.min_order_amount && subtotal < coupon.min_order_amount) {
+                        messageEl.innerText = `هذا الكود يتطلب حداً أدنى للطلب بقيمة ${coupon.min_order_amount} ريال`;
+                        messageEl.className = 'text-[10px] mt-2 text-orange-600 block';
+                        appliedCoupon = null;
+                    } else {
+                        messageEl.innerText = `تم تطبيق الخصم بنسبة ${coupon.discount_percent}% بنجاح!`;
+                        messageEl.className = 'text-[10px] mt-2 text-green-600 block';
+                        appliedCoupon = coupon;
+                    }
+                }
+                updateDeliveryFee();
+            } catch (err) { console.error(err); }
+        }
+
+        function updateDeliveryFee() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const type = document.querySelector('input[name="delivery_type"]:checked').value;
+            const zoneId = document.getElementById('delivery-zone-select').value;
+            const infoCard = document.getElementById('delivery-info-card');
+
+            let fee = 0;
+
+            if (type === 'delivery' && zoneId) {
+                const zone = deliveryZones.find(z => z.id == zoneId);
+                if (zone) {
+                    infoCard.classList.remove('hidden');
+                    document.getElementById('zone-fee-text').innerText = `رسوم التوصيل الأساسية: ${zone.delivery_fee} ريال`;
+                    document.getElementById('zone-time-text').innerText = `الوقت المتوقع: ${zone.estimated_delivery_time || '20-30 دقيقة'}`;
+
+                    const progress = Math.min((subtotal / zone.free_delivery_minimum) * 100, 100);
+                    const bar = document.getElementById('free-delivery-progress');
+                    const badge = document.getElementById('free-delivery-badge');
+                    const hint = document.getElementById('delivery-hint-text');
+
+                    bar.style.width = `${progress}%`;
+
+                    if (subtotal >= zone.free_delivery_minimum) {
+                        fee = 0;
+                        badge.classList.remove('hidden');
+                        hint.innerText = 'مبروك! طلبك مؤهل للتوصيل المجاني';
+                        hint.className = 'text-[11px] mt-2 font-bold text-green-600';
+                        infoCard.className = 'mt-3 p-4 rounded-xl border border-green-100 bg-green-50/30 transition-all';
+                    } else {
+                        fee = zone.delivery_fee;
+                        badge.classList.add('hidden');
+                        const remaining = zone.free_delivery_minimum - subtotal;
+                        hint.innerText = `أضف منتجات بقيمة ${remaining} ريال للحصول على توصيل مجاني`;
+                        hint.className = 'text-[11px] mt-2 font-bold text-orange-600';
+                        infoCard.className = 'mt-3 p-4 rounded-xl border border-orange-100 bg-orange-50/30 transition-all';
+                    }
+                }
+            } else {
+                infoCard.classList.add('hidden');
+                fee = 0;
+            }
+
+            document.getElementById('delivery-fee').innerText = `${fee} رس`;
+
+            // Calculate Discount
+            let discount = 0;
+            const discountRow = document.getElementById('discount-row');
+            const discountAmountEl = document.getElementById('discount-amount');
+
+            if (appliedCoupon) {
+                discount = subtotal * (appliedCoupon.discount_percent / 100);
+                discountRow.classList.remove('hidden');
+                discountAmountEl.innerText = `-${discount.toFixed(2)} ريال`;
+            } else {
+                discountRow.classList.add('hidden');
+            }
+
+            const total = subtotal + fee - discount;
+            document.getElementById('total-price').innerText = `${total.toFixed(2)} رس`;
+        }
+
+        function toggleAddress(show) {
+            document.getElementById('address-section').style.display = show ? 'block' : 'none';
+            updateDeliveryFee();
+        }
+
+        function toggleBankDetails(show, type) {
+            const bankDetails = document.getElementById('bank-details');
+            const accNumber = document.getElementById('bank-acc-number');
+            const bankLabel = document.getElementById('bank-name-label');
+            const refInput = document.getElementById('transfer-reference');
+            const senderInput = document.getElementById('transfer-sender');
+            if (show) {
+                bankDetails.style.display = 'block';
+                if (type === 'alamqi') {
+                    accNumber.innerText = '254152180';
+                    bankLabel.innerText = 'العمقي';
+                } else if (type === 'bindoal') {
+                    accNumber.innerText = '23155444';
+                    bankLabel.innerText = 'بن دول';
+                }
+                if (refInput) refInput.classList.remove('border-red-400');
+                if (senderInput) senderInput.classList.remove('border-red-400');
+            } else {
+                bankDetails.style.display = 'none';
+                if (refInput) refInput.value = '';
+                if (senderInput) senderInput.value = '';
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.currentTarget;
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<span class="material-symbols-outlined text-sm text-green-500">check</span>';
+                setTimeout(() => btn.innerHTML = originalIcon, 2000);
+            });
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const deliveryType = document.querySelector('input[name="delivery_type"]:checked').value;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = parseFloat(document.getElementById('delivery-fee').innerText) || 0;
+            const zoneId = document.getElementById('delivery-zone-select').value;
+            const zone = deliveryZones.find(z => z.id == zoneId);
+            const user = JSON.parse(localStorage.getItem('mazaki_user'));
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+            // --- Validate transfer fields ---
+            const isTransfer = paymentMethod === 'alamqi' || paymentMethod === 'bindoal';
+            const transferRef = document.getElementById('transfer-reference')?.value?.trim();
+            const transferSender = document.getElementById('transfer-sender')?.value?.trim();
+
+            if (isTransfer) {
+                if (!transferRef) {
+                    document.getElementById('transfer-reference').focus();
+                    document.getElementById('transfer-reference').classList.add('border-red-400');
+                    return;
+                }
+                if (!transferSender) {
+                    document.getElementById('transfer-sender').focus();
+                    document.getElementById('transfer-sender').classList.add('border-red-400');
+                    return;
+                }
+            }
+
+            // Recalculate discount one last time to be sure
+            let finalDiscount = 0;
+            if (appliedCoupon) {
+                finalDiscount = subtotal * (appliedCoupon.discount_percent / 100);
+            }
+
+            const orderData = {
+                user_id: user ? user.id : null,
+                customer_name: document.getElementById('customer-name').value,
+                customer_email: document.getElementById('customer-email').value,
+                customer_phone: document.getElementById('customer-phone').value,
+                address: deliveryType === 'delivery' ?
+                    `منطقة التوصيل: ${zone?.zone_name || 'غير محدد'} - العنوان: ${document.getElementById('address-details').value}` :
+                    'استلام من الفرع',
+                order_type: deliveryType,
+                payment_method: paymentMethod,
+                transfer_reference: isTransfer ? transferRef : null,
+                transfer_sender: isTransfer ? transferSender : null,
+                items: cart.map(item => ({
+                    product_id: item.product_id,
+                    product_name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    notes: item.notes || ''
+                })),
+                subtotal: subtotal,
+                delivery_fee: deliveryFee,
+                discount_amount: finalDiscount,
+                coupon_code: appliedCoupon ? appliedCoupon.code : null,
+                total: subtotal + deliveryFee - finalDiscount,
+                delivery_zone_id: zoneId || null,
+                delivery_zone_name: zone?.zone_name || null,
+                estimated_delivery_time: zone?.estimated_delivery_time || null,
+                free_delivery_applied: deliveryFee === 0 && deliveryType === 'delivery',
+                free_delivery_minimum: zone?.free_delivery_minimum || 0
+            };
+
+            const token = localStorage.getItem('mazaki_token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(orderData)
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    clearCart();
+                    window.location.href = `order-success.html?orderId=${data.orderId}`;
+                } else {
+                    alert(data.message || 'حدث خطأ أثناء إرسال الطلب');
+                }
+            } catch (err) { alert('حدث خطأ أثناء إرسال الطلب'); }
+        });
+    </script>
+</body>
+
+</html>

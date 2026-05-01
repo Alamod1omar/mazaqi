@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إنشاء حساب - بوفية مذاقي</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#964900",
+              "primary-container": "#f57c00",
+              background: "#f4faff",
+              surface: "#f4faff",
+              "on-surface": "#111d23",
+              "on-surface-variant": "#574235",
+              outline: "#8b7263",
+            },
+            fontFamily: {
+              sans: ["Almarai", "sans-serif"],
+            },
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col justify-center items-center px-4 py-12">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-black text-primary mb-2">بوفية مذاقي</h1>
+            <p class="text-on-surface-variant">انضم إلينا لتجربة طلب سهلة</p>
+        </div>
+
+        <form id="register-form" class="space-y-4">
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm font-bold text-center"></div>
+
+            <div>
+                <label class="block text-xs font-bold mb-1 mr-1">الاسم الكامل</label>
+                <input id="full_name" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm" placeholder="أدخل اسمك" type="text"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 mr-1">البريد الإلكتروني</label>
+                <input id="email" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm" dir="ltr" placeholder="example@mail.com" type="email"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 mr-1">منطقة التوصيل</label>
+                <select id="delivery_zone" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm">
+                    <option value="" disabled selected>اختر المنطقة...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 mr-1">رقم الجوال</label>
+                <input id="phone" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm" dir="ltr" placeholder="77xxxxxxx" type="tel"/>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1 mr-1">كلمة المرور</label>
+                    <input id="password" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm" placeholder="********" type="password"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 mr-1">تأكيد كلمة المرور</label>
+                    <input id="confirm_password" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm" placeholder="********" type="password"/>
+                </div>
+            </div>
+            <button type="submit" id="submit-btn" class="w-full bg-primary hover:bg-primary-container text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 mt-4 flex items-center justify-center gap-2">
+                إنشاء حساب
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-on-surface-variant mb-4">لديك حساب بالفعل؟</p>
+            <a href="login.html" class="text-primary font-bold hover:underline">تسجيل الدخول</a>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDeliveryZones();
+        });
+
+        async function loadDeliveryZones() {
+            try {
+                const res = await fetch('/api/delivery-zones');
+                const zones = await res.json();
+                const select = document.getElementById('delivery_zone');
+                zones.forEach(zone => {
+                    const opt = document.createElement('option');
+                    opt.value = zone.zone_name;
+                    opt.textContent = zone.zone_name;
+                    select.appendChild(opt);
+                });
+            } catch (err) { console.error('Error loading zones:', err); }
+        }
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('error-message');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            const full_name = document.getElementById('full_name').value;
+            const email = document.getElementById('email').value;
+            const delivery_zone = document.getElementById('delivery_zone').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+
+            errorDiv.classList.add('hidden');
+
+            if (phone.length !== 9) {
+                errorDiv.innerText = 'رقم الجوال يجب أن يتكون من 9 أرقام';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (password !== confirm_password) {
+                errorDiv.innerText = 'كلمتا المرور غير متطابقتين';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">refresh</span> جاري إنشاء الحساب...';
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name, phone, email, delivery_zone, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.require_otp) {
+                        window.location.href = `verify-otp.html?email=${encodeURIComponent(email)}`;
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                } else {
+                    errorDiv.innerText = data.message;
+                    errorDiv.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'إنشاء حساب';
+                }
+            } catch (err) {
+                errorDiv.innerText = 'حدث خطأ أثناء إنشاء الحساب';
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'إنشاء حساب';
+            }
+        });
+    </script>
+</body></html>

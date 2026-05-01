@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>بوفية مذاقي - الإعدادات</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#964900",
+                        "primary-container": "#f57c00",
+                        "background": "#f4faff",
+                        "on-background": "#111d23",
+                        "surface": "#f4faff",
+                        "on-surface": "#111d23",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#d7e4ec",
+                        "on-surface-variant": "#574235",
+                        "surface-container": "#e3f0f8",
+                        "surface-container-low": "#e9f6fd",
+                        "surface-dim": "#cfdce4",
+                        "outline-variant": "#dec1af"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Almarai"],
+                        "display-md": ["Almarai"],
+                        "headline-sm": ["Almarai"],
+                        "label-lg": ["Almarai"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .ambient-shadow-1 { box-shadow: 0px 4px 20px rgba(0,0,0,0.05); }
+        .input-focus-ring:focus { outline: none; border-color: #964900; box-shadow: 0 0 0 1px #964900; }
+        body { font-family: 'Almarai', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+    <!-- SideNavBar -->
+    <aside class="bg-gray-50 dark:bg-gray-950 font-sans text-sm font-medium h-screen w-64 border-l border-gray-200 dark:border-gray-800 hidden md:flex flex-col fixed right-0 top-0 h-full z-40">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <h1 class="text-xl font-black text-gray-900 dark:text-white">بوفية مذاقي</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">لوحة الإدارة</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col gap-2 overflow-y-auto" id="admin-nav">
+            <!-- JS filled -->
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 md:mr-64 w-full min-h-screen">
+        <header class="bg-white/95 border-b border-gray-100 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm backdrop-blur-md">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden text-gray-600">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="font-black text-lg text-on-background">إعدادات الكافتيريا</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4 relative">
+                    <div class="relative group">
+                        <button class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-primary font-black border border-orange-100 hover:bg-primary hover:text-white transition-all cursor-pointer">
+                            أ
+                        </button>
+                        <div class="absolute left-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="p-4 border-b border-gray-50">
+                                <p class="font-black text-gray-900" id="admin-name-display">المدير العام</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">مدير النظام</p>
+                            </div>
+                            <div class="p-2">
+                                <button onclick="adminLogout()" class="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors font-bold text-sm">
+                                    <span class="material-symbols-outlined text-lg">logout</span>
+                                    تسجيل الخروج
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-4xl mx-auto p-6 md:p-12 space-y-10">
+            <!-- Store Information -->
+            <section class="bg-white rounded-3xl p-8 md:p-10 ambient-shadow-1 border border-gray-50">
+                <div class="flex items-center justify-between mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">storefront</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black">معلومات المتجر</h3>
+                            <p class="text-xs text-gray-400 mt-1">إدارة البيانات الأساسية للبوفية</p>
+                        </div>
+                    </div>
+                </div>
+                <form id="store-info-form" class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider mr-2">اسم المتجر</label>
+                            <input id="set-name" class="bg-gray-50/50 border-2 border-gray-100 rounded-2xl p-4 font-body-md text-on-background focus:border-primary focus:bg-white focus:ring-0 transition-all outline-none w-full" type="text" placeholder="بوفية مذاقي"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider mr-2">رقم الهاتف</label>
+                            <input id="set-phone" class="bg-gray-50/50 border-2 border-gray-100 rounded-2xl p-4 font-body-md text-on-background focus:border-primary focus:bg-white focus:ring-0 transition-all outline-none w-full text-right" dir="ltr" type="tel" placeholder="050 123 4567"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider mr-2">رقم الواتساب</label>
+                            <input id="set-whatsapp" class="bg-gray-50/50 border-2 border-gray-100 rounded-2xl p-4 font-body-md text-on-background focus:border-primary focus:bg-white focus:ring-0 transition-all outline-none w-full text-right" dir="ltr" type="tel" placeholder="966 50 123 4567"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider mr-2">العنوان</label>
+                            <input id="set-address" class="bg-gray-50/50 border-2 border-gray-100 rounded-2xl p-4 font-body-md text-on-background focus:border-primary focus:bg-white focus:ring-0 transition-all outline-none w-full" type="text" placeholder="شارع الأمير سلطان، حي العليا، الرياض"/>
+                        </div>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button type="submit" class="bg-primary text-white font-black py-4 px-12 rounded-2xl hover:bg-opacity-90 transition-all active:scale-95 shadow-xl shadow-orange-100 flex items-center gap-3">
+                            <span class="material-symbols-outlined">save</span>
+                            حفظ المعلومات
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Delivery Settings -->
+            <section class="bg-white rounded-3xl p-8 md:p-10 ambient-shadow-1 border border-gray-50">
+                <div class="flex items-center justify-between mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                            <span class="material-symbols-outlined text-3xl">local_shipping</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black">إعدادات الطلب</h3>
+                            <p class="text-xs text-gray-400 mt-1">التحكم في توفر المتجر للطلبات</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50/30 p-8 rounded-3xl flex items-center justify-between border border-blue-100/50">
+                    <div>
+                        <h4 class="font-black text-on-background">استقبال الطلبات</h4>
+                        <p class="text-sm text-gray-500 mt-1">تفعيل أو تعطيل إمكانية الطلب من الموقع حالياً</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer scale-110">
+                        <input id="set-open" class="sr-only peer" type="checkbox"/>
+                        <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+
+                <div class="pt-10 flex justify-end">
+                    <button id="save-delivery-btn" class="bg-primary text-white font-black py-4 px-12 rounded-2xl hover:bg-opacity-90 transition-all active:scale-95 shadow-xl shadow-orange-100 flex items-center gap-3">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        حفظ الإعدادات
+                    </button>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section class="bg-white rounded-3xl p-8 md:p-10 ambient-shadow-1 border border-gray-50">
+                <div class="flex items-center justify-between mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
+                            <span class="material-symbols-outlined text-3xl">lock</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black">الأمان</h3>
+                            <p class="text-xs text-gray-400 mt-1">تحديث كلمة مرور لوحة التحكم</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider mr-2">كلمة المرور الجديدة</label>
+                            <input id="new-password" class="bg-gray-50/50 border-2 border-gray-100 rounded-2xl p-4 font-body-md text-on-background focus:border-primary focus:bg-white focus:ring-0 transition-all outline-none w-full" type="password" placeholder="••••••••"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-black text-gray-500 uppercase tracking-wider mr-2">تأكيد كلمة المرور</label>
+                            <input id="confirm-password" class="bg-gray-50/50 border-2 border-gray-100 rounded-2xl p-4 font-body-md text-on-background focus:border-primary focus:bg-white focus:ring-0 transition-all outline-none w-full" type="password" placeholder="••••••••"/>
+                        </div>
+                    </div>
+                    <div class="pt-4 flex justify-start">
+                        <button onclick="updatePassword()" class="bg-white border-2 border-primary text-primary font-black py-4 px-12 rounded-2xl hover:bg-orange-50 transition-all active:scale-95 flex items-center gap-3">
+                            <span class="material-symbols-outlined">key</span>
+                            تحديث كلمة المرور
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isAdmin()) return window.location.href = 'login.html';
+            const adminUser = JSON.parse(localStorage.getItem('mazaki_admin_user'));
+            if (adminUser) document.getElementById('admin-name-display').innerText = adminUser.username || 'المدير';
+            await loadSettings();
+        });
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                const set = await res.json();
+                document.getElementById('set-name').value = set.cafeteria_name || '';
+                document.getElementById('set-phone').value = set.phone || '';
+                document.getElementById('set-whatsapp').value = set.whatsapp || '';
+                document.getElementById('set-address').value = set.address || '';
+                document.getElementById('set-open').checked = set.is_open === 1;
+            } catch (err) { console.error(err); }
+        }
+
+        async function saveSettings() {
+            const data = {
+                cafeteria_name: document.getElementById('set-name').value,
+                phone: document.getElementById('set-phone').value,
+                whatsapp: document.getElementById('set-whatsapp').value,
+                address: document.getElementById('set-address').value,
+                is_open: document.getElementById('set-open').checked ? 1 : 0
+            };
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) alert('تم حفظ التغييرات بنجاح');
+                else alert('فشل في حفظ التغييرات');
+            } catch (err) { alert('خطأ في الاتصال بالخادم'); }
+        }
+
+        async function updatePassword() {
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+
+            if (!newPass) return alert('يرجى إدخال كلمة المرور الجديدة');
+            if (newPass !== confirmPass) return alert('كلمات المرور غير متطابقة');
+
+            try {
+                const res = await fetch('/api/admin/update-password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` },
+                    body: JSON.stringify({ newPassword: newPass })
+                });
+                if (res.ok) {
+                    alert('تم تحديث كلمة المرور بنجاح');
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                } else {
+                    alert('فشل في تحديث كلمة المرور');
+                }
+            } catch (err) { alert('خطأ في الاتصال بالخادم'); }
+        }
+
+        document.getElementById('store-info-form').addEventListener('submit', (e) => { e.preventDefault(); saveSettings(); });
+        document.getElementById('save-delivery-btn').addEventListener('click', saveSettings);
+    </script>
+</body>
+</html>

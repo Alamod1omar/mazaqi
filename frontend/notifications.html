@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>الإشعارات - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#964900",
+                        "primary-container": "#f57c00",
+                        "background": "#f4faff",
+                        "on-background": "#111d23",
+                        "on-surface-variant": "#574235"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Almarai', sans-serif; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .notif-card { animation: fadeInUp 0.35s ease both; }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 16px;
+        }
+        @keyframes shimmer {
+            from { background-position: 200% 0; }
+            to   { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-28 md:pb-0">
+
+<!-- Top Navigation -->
+<nav id="top-nav" class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 h-16"></nav>
+
+<!-- Mobile Bottom Navigation -->
+<div id="bottom-nav" class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white rounded-t-3xl z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t"></div>
+
+<script src="js/customer-nav.js"></script>
+
+<!-- Main Content -->
+<main class="max-w-2xl mx-auto px-4 md:px-6 py-10 mt-16">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <button id="mark-all-btn" onclick="markAllRead()"
+            class="hidden text-sm font-bold text-primary hover:text-primary-container transition-colors px-4 py-2 rounded-xl hover:bg-orange-50">
+            قراءة الكل
+        </button>
+        <div>
+            <h1 class="text-3xl font-black text-on-background">الإشعارات</h1>
+            <p id="unread-count-text" class="text-sm text-on-surface-variant mt-1"></p>
+        </div>
+    </div>
+
+    <!-- Loading skeletons -->
+    <div id="loading-state" class="space-y-4">
+        <div class="skeleton h-24 w-full"></div>
+        <div class="skeleton h-24 w-full"></div>
+    </div>
+
+    <!-- Notifications List -->
+    <div id="notifications-list" class="hidden space-y-4"></div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-24 bg-white rounded-3xl shadow-sm">
+        <div class="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="material-symbols-outlined text-5xl text-orange-200">notifications</span>
+        </div>
+        <h2 class="text-xl font-black mb-2 text-gray-700">لا توجد إشعارات بعد</h2>
+        <p class="text-gray-400 font-bold text-sm">ستظهر هنا العروض والتحديثات الجديدة</p>
+    </div>
+
+</main>
+
+<script src="js/app.js"></script>
+<script>
+    window.addEventListener('load', init);
+
+    async function init() {
+        const token = localStorage.getItem('mazaki_token');
+        if (!token) {
+            hide('loading-state');
+            show('empty-state'); // Or redirect to login
+            return;
+        }
+        await fetchNotifications(token);
+    }
+
+    async function fetchNotifications(token) {
+        try {
+            const res = await fetch('/api/notifications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            hide('loading-state');
+            if (!res.ok) { show('empty-state'); return; }
+            const notifications = await res.json();
+            if (notifications.length === 0) { show('empty-state'); return; }
+            renderNotifications(notifications);
+        } catch (err) {
+            console.error(err);
+            hide('loading-state');
+            show('empty-state');
+        }
+    }
+
+    function renderNotifications(notifications) {
+        const list = document.getElementById('notifications-list');
+        list.innerHTML = notifications.map(n => {
+            const isCoupon = n.type === 'coupon_offer';
+            const isProduct = n.type === 'product_offer';
+            let data = {};
+            if (n.data) { try { data = JSON.parse(n.data); } catch (e) { } }
+
+            if (isCoupon || isProduct) {
+                return `
+                    <div class="notif-card bg-white rounded-[32px] p-6 shadow-sm border-2 ${n.is_read ? 'border-gray-50' : 'border-orange-100 bg-orange-50/10'} mb-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-orange-600" style="font-variation-settings: 'FILL' 1;">${isProduct ? 'restaurant' : 'local_offer'}</span>
+                            </div>
+                            <div class="flex-1 text-right">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-[10px] font-bold text-gray-300">${formatDate(n.created_at)}</span>
+                                    <h3 class="font-black text-gray-900">${n.title}</h3>
+                                </div>
+                                
+                                <p class="text-gray-500 text-xs mb-4 leading-relaxed">${n.message}</p>
+
+                                <!-- Rich Design Box -->
+                                <div class="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-100">
+                                    ${isCoupon ? `
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border-2 border-dashed border-orange-200 cursor-pointer" onclick="copyCode('${data.code}')">
+                                                <span class="material-symbols-outlined text-orange-400 text-sm">content_copy</span>
+                                                <span class="font-black text-orange-700 uppercase tracking-wider">${data.code}</span>
+                                            </div>
+                                            <span class="text-[10px] font-bold text-gray-400">استخدم الكود عند الدفع</span>
+                                        </div>
+                                    ` : `
+                                        <div class="flex justify-between items-center mb-4">
+                                            <span class="text-sm font-black text-gray-800">${data.productName}</span>
+                                            <div class="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-1 rounded-lg">عرض خاص</div>
+                                        </div>
+                                    `}
+                                    
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="bg-white p-3 rounded-xl border border-gray-50 text-center">
+                                            <p class="text-[10px] font-bold text-gray-300 mb-1">نسبة الخصم</p>
+                                            <p class="font-black text-orange-600 text-lg">${data.discount_percent}%</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded-xl border border-gray-50 text-center">
+                                            <p class="text-[10px] font-bold text-gray-300 mb-1">${isCoupon ? 'الحد الأدنى' : 'ينتهي في'}</p>
+                                            <p class="font-black text-gray-700 text-sm">${isCoupon ? (data.min_order_amount + ' ر.س') : (data.end_date ? new Date(data.end_date).toLocaleDateString('ar-SA') : 'مفتوح')}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end gap-3">
+                                    <button onclick="markRead(${n.id})" class="text-[10px] font-bold text-gray-300 hover:text-gray-500">تمييز كمقروء</button>
+                                    <a href="${isProduct ? 'menu.html' : 'index.html'}" class="bg-primary text-white text-[10px] font-black px-6 py-2 rounded-xl shadow-lg shadow-orange-100">
+                                        ${isProduct ? 'اطلب الآن' : 'تسوق الآن'}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // General Notification
+            return `
+                <div class="notif-card bg-white rounded-2xl p-5 shadow-sm border-2 transition-all ${n.is_read ? 'border-gray-50' : 'border-orange-100 bg-orange-50/10'}">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl ${n.is_read ? 'bg-gray-100' : 'bg-orange-100'} flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined ${n.is_read ? 'text-gray-400' : 'text-orange-500'}" style="font-variation-settings: 'FILL' 1;">notifications</span>
+                        </div>
+                        <div class="flex-1 text-right">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-gray-300 text-[10px] font-bold">${formatDate(n.created_at)}</span>
+                                <h3 class="font-black text-gray-900 text-sm">${n.title}</h3>
+                            </div>
+                            <p class="text-gray-500 text-xs leading-relaxed mb-3">${n.message}</p>
+                            <div class="flex justify-end">
+                                <button onclick="markRead(${n.id})" class="text-[10px] font-bold text-gray-400 hover:text-primary transition-colors">تمييز كمقروء</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        show('notifications-list');
+    }
+
+    window.copyCode = function(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            alert('تم نسخ الكود: ' + code);
+        });
+    }
+
+    function formatDate(dateStr) {
+        // Handle UTC date from SQLite
+        const d = new Date(dateStr + (dateStr.includes('Z') ? '' : 'Z'));
+        const now = new Date();
+        const diff = Math.floor((now - d) / 1000);
+        
+        if (diff < 60) return 'الآن';
+        
+        const mins = Math.floor(diff / 60);
+        if (mins < 60) {
+            if (mins === 1) return 'منذ دقيقة';
+            if (mins === 2) return 'منذ دقيقتين';
+            if (mins <= 10) return `منذ ${mins} دقائق`;
+            return `منذ ${mins} دقيقة`;
+        }
+        
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) {
+            if (hours === 1) return 'منذ ساعة';
+            if (hours === 2) return 'منذ ساعتين';
+            if (hours <= 10) return `منذ ${hours} ساعات`;
+            return `منذ ${hours} ساعة`;
+        }
+        
+        const days = Math.floor(hours / 24);
+        if (days < 7) {
+            if (days === 1) return 'منذ يوم';
+            if (days === 2) return 'منذ يومين';
+            return `منذ ${days} أيام`;
+        }
+        
+        return d.toLocaleDateString('ar-SA');
+    }
+
+    window.markRead = async function(id) {
+        const token = localStorage.getItem('mazaki_token');
+        if (!token) return;
+        try {
+            await fetch(`/api/notifications/${id}/read`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            init(); // Refresh
+        } catch (err) { console.error(err); }
+    }
+
+    window.markAllRead = async function() {
+        const token = localStorage.getItem('mazaki_token');
+        if (!token) return;
+        try {
+            await fetch('/api/notifications/read-all', {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            init();
+        } catch (err) { console.error(err); }
+    }
+
+    function show(id) { document.getElementById(id)?.classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id)?.classList.add('hidden'); }
+</script>
+</body>
+</html>

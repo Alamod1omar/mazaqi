@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>تحقق من البريد الإلكتروني - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#964900",
+                        "primary-container": "#f57c00",
+                        background: "#f4faff",
+                        surface: "#ffffff",
+                    },
+                    fontFamily: {
+                        sans: ["Almarai", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .otp-input:focus {
+            border-color: #964900;
+            box-shadow: 0 0 0 2px rgba(150, 73, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-gray-900 min-h-screen flex flex-col justify-center items-center px-4">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.04)] p-8 md:p-10 border border-gray-100">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-orange-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-4xl">mark_email_read</span>
+            </div>
+            <h1 class="text-2xl font-black text-gray-900 mb-3">تحقق من بريدك الإلكتروني</h1>
+            <p class="text-gray-500 text-sm leading-relaxed">
+                لقد أرسلنا رمز تحقق مكون من 6 أرقام إلى: <br>
+                <span id="display-email" class="font-bold text-primary"></span>
+            </p>
+        </div>
+
+        <form id="otp-form" class="space-y-8">
+            <div class="flex justify-between gap-2" dir="ltr">
+                <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white transition-all" required onkeyup="moveNext(this, 'otp2')">
+                <input type="text" id="otp2" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white transition-all" required onkeyup="moveNext(this, 'otp3')">
+                <input type="text" id="otp3" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white transition-all" required onkeyup="moveNext(this, 'otp4')">
+                <input type="text" id="otp4" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white transition-all" required onkeyup="moveNext(this, 'otp5')">
+                <input type="text" id="otp5" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white transition-all" required onkeyup="moveNext(this, 'otp6')">
+                <input type="text" id="otp6" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white transition-all" required>
+            </div>
+
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm font-bold text-center"></div>
+
+            <button type="submit" id="submit-btn" class="w-full bg-primary hover:bg-primary-container text-white font-bold py-4 rounded-2xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                تأكيد الرمز
+            </button>
+        </form>
+
+        <div class="mt-10 text-center">
+            <p class="text-gray-500 text-sm mb-2">لم يصلك الرمز؟</p>
+            <button onclick="resendOTP()" id="resend-btn" class="text-primary font-bold hover:underline disabled:opacity-50 disabled:no-underline">
+                إعادة إرسال الرمز
+            </button>
+            <p id="timer" class="text-xs text-gray-400 mt-2"></p>
+        </div>
+
+        <div class="mt-8 pt-8 border-t border-gray-50 text-center">
+            <a href="login.html" class="text-gray-400 text-sm hover:text-primary transition-colors flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                العودة لتسجيل الدخول
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        if (!email) window.location.href = 'register.html';
+        
+        document.getElementById('display-email').innerText = email;
+
+        function moveNext(current, nextId) {
+            if (current.value.length === 1) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        let resendTimer = 0;
+        function startTimer() {
+            resendTimer = 60;
+            const btn = document.getElementById('resend-btn');
+            const timerText = document.getElementById('timer');
+            btn.disabled = true;
+            
+            const interval = setInterval(() => {
+                resendTimer--;
+                timerText.innerText = `يمكنك إعادة الإرسال بعد ${resendTimer} ثانية`;
+                if (resendTimer <= 0) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    timerText.innerText = '';
+                }
+            }, 1000);
+        }
+
+        document.getElementById('otp-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const inputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(inputs).map(i => i.value).join('');
+            const errorDiv = document.getElementById('error-message');
+            const btn = document.getElementById('submit-btn');
+
+            if (otp.length < 6) return;
+
+            errorDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">refresh</span> جاري التحقق...';
+
+            try {
+                const res = await fetch('/api/auth/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('mazaki_token', data.token);
+                    localStorage.setItem('mazaki_user', JSON.stringify(data.user));
+                    
+                    // Success UI
+                    btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> تم التحقق بنجاح';
+                    btn.classList.replace('bg-primary', 'bg-green-600');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    errorDiv.innerText = data.message || 'رمز التحقق غير صحيح';
+                    errorDiv.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerText = 'تأكيد الرمز';
+                    // Clear inputs
+                    inputs.forEach(i => i.value = '');
+                    inputs[0].focus();
+                }
+            } catch (err) {
+                errorDiv.innerText = 'حدث خطأ في الاتصال بالسيرفر';
+                errorDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = 'تأكيد الرمز';
+            }
+        });
+
+        async function resendOTP() {
+            const btn = document.getElementById('resend-btn');
+            try {
+                const res = await fetch('/api/auth/resend-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                if (res.ok) {
+                    startTimer();
+                } else {
+                    alert('خطأ في إعادة الإرسال');
+                }
+            } catch (err) {
+                alert('خطأ في الاتصال');
+            }
+        }
+    </script>
+</body>
+</html>

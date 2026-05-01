@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>بوفية مذاقي - تتبع الطلب</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-primary-fixed-variant": "#723600",
+                "outline-variant": "#dec1af",
+                "surface-dim": "#cfdce4",
+                "primary-container": "#f57c00",
+                "on-tertiary": "#ffffff",
+                "surface-container-high": "#ddeaf2",
+                "on-secondary": "#ffffff",
+                "inverse-primary": "#ffb786",
+                "tertiary-fixed": "#ffdad6",
+                "on-error-container": "#93000a",
+                "inverse-surface": "#263238",
+                "background": "#f4faff",
+                "surface-container-lowest": "#ffffff",
+                "secondary-container": "#e7e2db",
+                "surface": "#f4faff",
+                "on-surface-variant": "#574235",
+                "on-background": "#111d23",
+                "secondary": "#615e59",
+                "on-tertiary-container": "#710009",
+                "on-error": "#ffffff",
+                "outline": "#8b7263",
+                "surface-variant": "#d7e4ec",
+                "on-secondary-fixed-variant": "#494642",
+                "surface-bright": "#f4faff",
+                "tertiary": "#ba1a20",
+                "primary": "#964900",
+                "on-surface": "#111d23",
+                "on-secondary-fixed": "#1d1b17",
+                "surface-container": "#e3f0f8",
+                "primary-fixed-dim": "#ffb786",
+                "error-container": "#ffdad6",
+                "secondary-fixed-dim": "#cbc6bf",
+                "secondary-fixed": "#e7e2db",
+                "tertiary-fixed-dim": "#ffb3ac",
+                "surface-container-low": "#e9f6fd",
+                "on-primary-fixed": "#311300",
+                "tertiary-container": "#ff7067",
+                "surface-container-highest": "#d7e4ec",
+                "on-secondary-container": "#67645f",
+                "error": "#ba1a1a",
+                "surface-tint": "#964900",
+                "on-tertiary-fixed": "#410003",
+                "on-tertiary-fixed-variant": "#930010",
+                "on-primary-container": "#572800",
+                "primary-fixed": "#ffdcc6",
+                "on-primary": "#ffffff",
+                "inverse-on-surface": "#e6f3fb"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-md": "1rem",
+                "section-gap": "4rem",
+                "margin-mobile": "1rem",
+                "container-max": "1200px",
+                "gutter": "1.5rem",
+                "stack-sm": "0.5rem"
+        },
+        "fontFamily": {
+                "body-md": ["Almarai"],
+                "headline-sm": ["Almarai"],
+                "label-lg": ["Almarai"],
+                "display-lg": ["Almarai"],
+                "display-md": ["Almarai"],
+                "label-sm": ["Almarai"],
+                "body-lg": ["Almarai"]
+        },
+        "spacing": {
+                "stack-md": "1rem",
+                "section-gap": "4rem",
+                "margin-mobile": "1rem",
+                "container-max": "1200px",
+                "gutter": "1.5rem",
+                "stack-sm": "0.5rem"
+        },
+        "fontFamily": {
+                "body-md": ["Almarai"],
+                "headline-sm": ["Almarai"],
+                "label-lg": ["Almarai"],
+                "display-lg": ["Almarai"],
+                "display-md": ["Almarai"],
+                "label-sm": ["Almarai"],
+                "body-lg": ["Almarai"]
+        },
+        "fontSize": {
+                "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                "label-lg": ["14px", {"lineHeight": "1.0", "fontWeight": "700"}],
+                "display-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                "display-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                "label-sm": ["12px", {"lineHeight": "1.0", "fontWeight": "400"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    background-color: theme('colors.background');
+    color: theme('colors.on-background');
+    font-family: 'Almarai', sans-serif;
+  }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<nav id="top-nav" class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100"></nav>
+
+<!-- Mobile Bottom Navigation -->
+<div id="bottom-nav" class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white rounded-t-3xl z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t"></div>
+
+<script src="js/customer-nav.js"></script>
+<!-- Main Content Area -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-6 py-section-gap">
+<!-- Order Header -->
+<div class="mb-stack-md flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+<div>
+<h1 class="font-display-md text-display-md text-on-surface mb-2" id="order-id-title">طلب #...</h1>
+<p class="font-body-md text-body-md text-on-surface-variant" id="order-date">تاريخ الطلب: ...</p>
+</div>
+<div id="order-status-badge" class="bg-primary-container/10 text-primary px-4 py-2 rounded-full font-label-lg text-label-lg inline-flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cooking</span>
+      <span id="order-status-text">...</span>
+    </div>
+</div>
+<!-- Timeline Section -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-6 mb-stack-md">
+<div class="relative">
+<!-- Track Line (Background) -->
+<div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant -translate-y-1/2 z-0 hidden md:block"></div>
+<!-- Progress Line (Active) -->
+<div id="progress-line" class="absolute top-1/2 right-0 w-0 h-1 bg-primary -translate-y-1/2 z-0 hidden md:block"></div>
+<div class="flex flex-col md:flex-row justify-between items-center relative z-10 gap-4 md:gap-0">
+<!-- Steps -->
+<div class="flex flex-col items-center gap-2" id="step-new">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center step-icon">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant text-center">تم استلام الطلب</span>
+</div>
+<div class="flex flex-col items-center gap-2" id="step-preparing">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center step-icon">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">cooking</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant text-center">قيد التحضير</span>
+</div>
+<div class="flex flex-col items-center gap-2" id="step-ready">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center step-icon">
+<span class="material-symbols-outlined text-sm">local_mall</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant text-center">جاهز للاستلام</span>
+</div>
+<div class="flex flex-col items-center gap-2" id="step-delivery">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center step-icon">
+<span class="material-symbols-outlined text-sm">local_shipping</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant text-center">في التوصيل</span>
+</div>
+<div class="flex flex-col items-center gap-2" id="step-completed">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center step-icon">
+<span class="material-symbols-outlined text-sm">flag</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant text-center">مكتمل</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Details Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Left Column: Order Summary -->
+<div class="lg:col-span-2 space-y-stack-md">
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-surface-variant pb-4">ملخص الطلب</h2>
+<div class="space-y-4" id="order-items">
+    <!-- Dynamic Items -->
+</div>
+</section>
+<!-- Delivery Info Section -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-surface-variant pb-4">معلومات التوصيل</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<div class="flex items-center gap-2 mb-2 text-on-surface-variant">
+<span class="material-symbols-outlined">location_on</span>
+<h3 class="font-label-lg text-label-lg">عنوان التوصيل</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface" id="delivery-address">...</p>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-2 text-on-surface-variant">
+<span class="material-symbols-outlined">schedule</span>
+<h3 class="font-label-lg text-label-lg">وقت الوصول المتوقع</h3>
+</div>
+<p class="font-body-md text-body-md text-primary text-xl font-bold" id="estimated-time">...</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Payment & Support -->
+<div class="space-y-stack-md">
+<!-- Payment Summary -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-surface-variant pb-4">الدفع</h2>
+<div class="space-y-3 mb-6">
+<div class="flex justify-between font-display-md text-display-md text-on-surface border-t border-surface-variant pt-3 mt-3">
+<span>الإجمالي</span>
+<span class="text-primary" id="total-price">0 SAR</span>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container p-3 rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant">payments</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">طريقة الدفع</p>
+<p class="font-label-lg text-label-lg text-on-surface" id="payment-method">الدفع عند الاستلام</p>
+</div>
+</div>
+</section>
+<!-- Support Actions -->
+<div class="flex flex-col gap-3">
+<a href="https://wa.me/966500000000" class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-lg text-label-lg py-4 rounded-lg flex justify-center items-center gap-2 transition-transform hover:scale-[1.02] shadow-[0px_4px_20px_rgba(0,0,0,0.05)] min-h-[48px]">
+<span class="material-symbols-outlined">support_agent</span>
+          تواصل مع الدعم
+</a>
+</div>
+</div>
+</div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadOrderDetails();
+        // Auto-refresh every 30 seconds
+        setInterval(loadOrderDetails, 30000);
+    });
+
+    async function loadOrderDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('id');
+        if (!orderId) return;
+
+        try {
+            const res = await fetch(`/api/orders/${orderId}`);
+            const order = await res.json();
+
+            document.getElementById('order-id-title').innerText = `طلب #${order.id}`;
+            document.getElementById('order-date').innerText = `تاريخ الطلب: ${new Date(order.created_at).toLocaleString('ar-SA')}`;
+            document.getElementById('order-status-text').innerText = order.status;
+            document.getElementById('delivery-address').innerText = order.address;
+            document.getElementById('total-price').innerText = `${order.total} SAR`;
+
+            // Update estimated time
+            const estTimeEl = document.getElementById('estimated-time');
+            if (order.order_type === 'pickup') {
+                estTimeEl.innerText = '15-20 دقيقة';
+            } else {
+                estTimeEl.innerText = order.estimated_delivery_time || 'جاري تحديد الوقت...';
+            }
+
+            const itemsContainer = document.getElementById('order-items');
+            itemsContainer.innerHTML = order.items.map(item => `
+                <div class="flex items-center gap-4 border-t border-surface-variant pt-4 first:border-0 first:pt-0">
+                    <img src="${item.image_url || 'images/placeholder-food.jpg'}" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="flex-grow">
+                        <h3 class="font-label-lg text-label-lg text-on-surface">${item.product_name}</h3>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-label-lg text-label-lg text-primary">${item.price} SAR</p>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant">الكمية: ${item.quantity}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            updateTimeline(order.status);
+        } catch (err) { console.error(err); }
+    }
+
+    function updateTimeline(status) {
+        const steps = ['جديد', 'قيد التحضير', 'جاهز للاستلام', 'في التوصيل', 'مكتمل'];
+        const stepIds = ['step-new', 'step-preparing', 'step-ready', 'step-delivery', 'step-completed'];
+        const index = steps.indexOf(status);
+        
+        stepIds.forEach((id, i) => {
+            const el = document.getElementById(id);
+            const icon = el.querySelector('.step-icon');
+            const text = el.querySelector('span:not(.material-symbols-outlined)');
+            
+            if (i < index) {
+                icon.classList.replace('bg-surface-variant', 'bg-primary');
+                icon.classList.replace('text-on-surface-variant', 'text-on-primary');
+                icon.innerHTML = '<span class="material-symbols-outlined text-sm">check</span>';
+                text.classList.replace('text-on-surface-variant', 'text-on-surface');
+            } else if (i === index) {
+                icon.classList.replace('bg-surface-variant', 'bg-primary');
+                icon.classList.replace('text-on-surface-variant', 'text-on-primary');
+                icon.classList.add('shadow-[0_0_0_4px_rgba(245,124,0,0.3)]');
+                text.classList.replace('text-on-surface-variant', 'text-primary');
+            }
+        });
+
+        const progress = document.getElementById('progress-line');
+        if (index >= 0) {
+            progress.style.width = `${(index / (steps.length - 1)) * 100}%`;
+        }
+    }
+</script>
+</body></html>

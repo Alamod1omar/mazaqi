@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>تسجيل الدخول - بوفية مذاقي</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#964900",
+              "primary-container": "#f57c00",
+              background: "#f4faff",
+              surface: "#f4faff",
+              "on-surface": "#111d23",
+              "on-surface-variant": "#574235",
+              outline: "#8b7263",
+            },
+            fontFamily: {
+              sans: ["Almarai", "sans-serif"],
+            },
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col justify-center items-center px-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-black text-primary mb-2">بوفية مذاقي</h1>
+            <p class="text-on-surface-variant">تسجيل الدخول للمتابعة</p>
+        </div>
+
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label class="block text-sm font-bold mb-2">رقم الجوال</label>
+                <input id="phone" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all" dir="ltr" placeholder="77xxxxxxx" type="tel"/>
+            </div>
+            <div class="relative">
+                <label class="block text-sm font-bold mb-2">كلمة المرور</label>
+                <div class="relative">
+                    <input id="password" required class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:bg-white transition-all" placeholder="********" type="password"/>
+                    <button type="button" onclick="togglePassword('password', this)" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary focus:outline-none">
+                        <span class="material-symbols-outlined text-xl">visibility</span>
+                    </button>
+                </div>
+                <div class="text-left mt-2">
+                    <a href="contact.html" class="text-xs text-primary font-bold hover:underline">نسيت كلمة المرور؟</a>
+                </div>
+            </div>
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm font-bold text-center mb-4"></div>
+            <button type="submit" id="submit-btn" class="w-full bg-primary hover:bg-primary-container text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95">
+                دخول
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-on-surface-variant mb-4">ليس لديك حساب؟</p>
+            <a href="register.html" class="text-primary font-bold hover:underline">إنشاء حساب جديد</a>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('.material-symbols-outlined');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerText = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.innerText = 'visibility';
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const submitBtn = document.getElementById('submit-btn');
+
+            errorDiv.classList.add('hidden');
+
+            if (phone.length !== 9) {
+                errorDiv.innerText = 'رقم الجوال يجب أن يتكون من 9 أرقام';
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'دخول';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">refresh</span> جاري التحقق...';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('mazaki_token', data.token);
+                    localStorage.setItem('mazaki_user', JSON.stringify(data.user));
+                    window.location.href = 'index.html';
+                } else {
+                    if (data.require_verification) {
+                        window.location.href = `verify-otp.html?email=${encodeURIComponent(data.email)}`;
+                    } else {
+                        errorDiv.innerText = 'رقم الجوال أو كلمة المرور غير صحيحة';
+                        errorDiv.classList.remove('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'دخول';
+                    }
+                }
+            } catch (err) {
+                errorDiv.innerText = 'حدث خطأ أثناء تسجيل الدخول';
+                errorDiv.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'دخول';
+            }
+        });
+    </script>
+</body></html>

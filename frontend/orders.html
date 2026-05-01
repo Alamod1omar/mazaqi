@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>طلباتي - بوفية مذاقي</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#964900",
+                        "background": "#f4faff",
+                        "surface": "#f4faff"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body { font-family: 'Almarai', sans-serif; }
+</style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+<!-- Top Navigation -->
+<nav id="top-nav" class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100"></nav>
+
+<!-- Mobile Bottom Navigation -->
+<div id="bottom-nav" class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white rounded-t-3xl z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t"></div>
+
+<script src="js/customer-nav.js"></script>
+
+<!-- Main Content -->
+<main class="max-w-3xl mx-auto px-4 md:px-6 pt-24 pb-12">
+<h1 class="text-3xl font-black mb-8">طلباتي السابقة</h1>
+<div id="orders-container" class="space-y-4">
+    <!-- Dynamic Orders -->
+</div>
+
+<!-- Load More Button -->
+<div id="load-more-container" class="hidden mt-8 text-center">
+    <button onclick="showMoreOrders()" class="flex items-center justify-center gap-2 mx-auto bg-white border-2 border-orange-100 text-orange-600 px-8 py-3 rounded-2xl font-bold hover:bg-orange-50 transition-all group">
+        إظهار المزيد
+        <span class="material-symbols-outlined transition-transform group-hover:translate-y-1">expand_more</span>
+    </button>
+</div>
+
+<div id="logged-out-msg" class="hidden text-center py-20">
+    <span class="material-symbols-outlined text-6xl text-gray-300">receipt_long</span>
+    <h2 class="text-2xl font-bold mt-4">يجب تسجيل الدخول لمشاهدة الطلبات</h2>
+    <a href="login.html" class="mt-6 inline-block bg-orange-600 text-white px-8 py-3 rounded-xl font-bold">تسجيل الدخول</a>
+</div>
+</main>
+
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white rounded-t-3xl z-50 border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex justify-around items-center px-4 pb-6 pt-3">
+<a class="flex flex-col items-center justify-center text-gray-400 active:bg-gray-50 transition-all" href="index.html">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[12px] font-bold mt-1">الرئيسية</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 active:bg-gray-50 transition-all" href="menu.html">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[12px] font-bold mt-1">المنيو</span>
+</a>
+<a class="flex flex-col items-center justify-center text-orange-600 bg-orange-50 rounded-xl px-3 py-1 transition-all" href="orders.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="text-[12px] font-bold mt-1">طلباتي</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 active:bg-gray-50 transition-all" href="cart.html">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-[12px] font-bold mt-1">السلة</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-400 active:bg-gray-50 transition-all" href="profile.html">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[12px] font-bold mt-1">حسابي</span>
+</a>
+</nav>
+
+<script src="js/app.js"></script>
+<script>
+    let allOrders = [];
+    let visibleCount = 5;
+
+    document.addEventListener('DOMContentLoaded', loadOrders);
+
+    async function loadOrders() {
+        const token = localStorage.getItem('mazaki_token');
+        if (!token) {
+            document.getElementById('logged-out-msg').classList.remove('hidden');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/orders/my-orders', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            allOrders = await res.json();
+            
+            if (allOrders.length === 0) {
+                document.getElementById('orders-container').innerHTML = '<p class="text-center py-12 text-gray-500">ليس لديك طلبات سابقة</p>';
+                return;
+            }
+
+            renderOrders();
+        } catch (err) { console.error(err); }
+    }
+
+    function renderOrders() {
+        const container = document.getElementById('orders-container');
+        const ordersToDisplay = allOrders.slice(0, visibleCount);
+        
+        container.innerHTML = ordersToDisplay.map(order => `
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-orange-200 transition-all cursor-pointer hover:shadow-md" onclick="window.location.href='tracking.html?id=${order.id}'">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="font-bold text-lg">طلب #${order.id}</h3>
+                        <p class="text-xs text-gray-400 font-bold">${new Date(order.created_at).toLocaleString('ar-SA')}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black ${getStatusClass(order.status)}">
+                        ${order.status}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500 font-bold">${order.order_type === 'delivery' ? 'توصيل للمنزل' : 'استلام من الفرع'}</span>
+                    <span class="font-black text-orange-600 text-lg">${order.total} ريال</span>
+                </div>
+            </div>
+        `).join('');
+
+        // Show/Hide Load More Button
+        const loadMoreBtn = document.getElementById('load-more-container');
+        if (allOrders.length > visibleCount) {
+            loadMoreBtn.classList.remove('hidden');
+        } else {
+            loadMoreBtn.classList.add('hidden');
+        }
+    }
+
+    function showMoreOrders() {
+        visibleCount += 5;
+        renderOrders();
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'جديد': return 'bg-blue-50 text-blue-600 border border-blue-100';
+            case 'قيد التحضير': return 'bg-orange-50 text-orange-600 border border-orange-100';
+            case 'جاهز للاستلام': return 'bg-purple-50 text-purple-600 border border-purple-100';
+            case 'في التوصيل': return 'bg-yellow-50 text-yellow-700 border border-yellow-100';
+            case 'مكتمل': return 'bg-green-50 text-green-600 border border-green-100';
+            case 'ملغي': return 'bg-red-50 text-red-600 border border-red-100';
+            default: return 'bg-gray-50 text-gray-600 border border-gray-100';
+        }
+    }
+</script>
+</body></html>

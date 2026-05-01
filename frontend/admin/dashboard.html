@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>لوحة التحكم - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#f57c00",
+                        "primary-container": "#e65100",
+                        "background": "#f4faff",
+                        "on-background": "#111d23",
+                        "surface": "#ffffff",
+                        "on-surface": "#111d23",
+                        "on-surface-variant": "#574235",
+                        "surface-container": "#e3f0f8",
+                        "surface-container-low": "#e9f6fd",
+                        "surface-dim": "#cfdce4",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Almarai', sans-serif;
+        }
+
+        .ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .status-badge {
+            @apply px-3 py-1 rounded-full text-[11px] font-black border;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex">
+    <!-- SideNavBar -->
+    <aside
+        class="bg-gray-50 dark:bg-gray-950 font-sans text-sm font-medium h-screen w-64 border-l border-gray-200 dark:border-gray-800 hidden md:flex flex-col fixed right-0 top-0 h-full z-40">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <h1 class="text-xl font-black text-gray-900 dark:text-white">بوفية مذاقي</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">لوحة الإدارة</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col gap-2 overflow-y-auto" id="admin-nav">
+            <!-- JS filled -->
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 md:mr-64 w-full min-h-screen">
+        <!-- Top Navigation -->
+        <header
+            class="bg-white/95 border-b border-gray-100 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm backdrop-blur-md">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden text-gray-600">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="font-black text-lg text-on-background">نظرة عامة</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4 relative">
+
+
+                    <!-- User Profile Dropdown -->
+                    <div class="relative group">
+                        <button
+                            class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-primary font-black border border-orange-100 hover:bg-primary hover:text-white transition-all cursor-pointer">
+                            أ
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                            class="absolute left-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="p-4 border-b border-gray-50">
+                                <p class="font-black text-gray-900" id="admin-name-display">المدير العام</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">مدير النظام</p>
+                            </div>
+                            <div class="p-2">
+                                <button onclick="adminLogout()"
+                                    class="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors font-bold text-sm">
+                                    <span class="material-symbols-outlined text-lg">logout</span>
+                                    تسجيل الخروج
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6 md:p-10 space-y-10">
+            <!-- Statistics Cards -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- New Orders -->
+                <div
+                    class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50 flex flex-col justify-between group hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span id="stats-new-orders-trend" class="text-[11px] font-black flex items-center gap-1"></span>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">shopping_bag</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 mb-1">طلبات جديدة</p>
+                        <h3 class="text-2xl font-black text-on-background" id="stats-new-orders">24</h3>
+                    </div>
+                </div>
+                <!-- Today's Orders -->
+                <div
+                    class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50 flex flex-col justify-between group hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span id="stats-today-orders-trend" class="text-[11px] font-black flex items-center gap-1 uppercase"></span>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 mb-1">طلبات اليوم</p>
+                        <h3 class="text-2xl font-black text-on-background" id="stats-today-orders">156</h3>
+                    </div>
+                </div>
+                <!-- Total Revenue -->
+                <div
+                    class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50 flex flex-col justify-between group hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span id="stats-revenue-trend" class="text-[11px] font-black flex items-center gap-1"></span>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">payments</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 mb-1">إجمالي المبيعات (ريال)</p>
+                        <h3 class="text-2xl font-black text-on-background" id="stats-revenue">4,850</h3>
+                    </div>
+                </div>
+                <!-- Out of Stock -->
+                <div
+                    class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50 flex flex-col justify-between group hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[11px] font-black text-red-500 uppercase">تحتاج انتباه</span>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">warning</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 mb-1">منتجات غير متوفرة</p>
+                        <h3 class="text-2xl font-black text-on-background" id="stats-out-of-stock">3</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notification Popup Container -->
+            <div id="notification-container" class="fixed bottom-6 left-6 z-[100] flex flex-col gap-4 max-w-sm w-full pointer-events-none"></div>
+
+            <!-- Audio Element for Notification -->
+            <audio id="order-sound" preload="auto">
+                <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+            </audio>
+
+            <!-- Recent Orders Table -->
+            <section class="bg-white rounded-2xl ambient-shadow border border-gray-50 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <h3 class="font-black text-lg text-on-background">أحدث الطلبات</h3>
+                    <a class="text-primary text-sm font-bold hover:underline transition-all" href="orders.html">عرض الكل</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-blue-50/30 text-[12px] font-black text-gray-400 border-b border-gray-100 uppercase tracking-wider whitespace-nowrap">
+                                <th class="px-8 py-4 text-right">رقم الطلب</th>
+                                <th class="px-8 py-4 text-right">العميل</th>
+                                <th class="px-8 py-4 text-right">نوع الطلب</th>
+                                <th class="px-8 py-4 text-right">وقت الطلب</th>
+                                <th class="px-8 py-4 text-right">الإجمالي</th>
+                                <th class="px-8 py-4 text-right">الحالة</th>
+                                <th class="px-8 py-4 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-orders-list" class="divide-y divide-gray-50 font-body-md text-on-background">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="../js/app.js?v=1.2"></script>
+    <script src="../js/admin-sidebar.js?v=1.2"></script>
+    <script>
+        let lastOrderId = localStorage.getItem('lastOrderId') || 0;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isAdmin()) return window.location.href = 'login.html';
+
+            // Display admin name
+            const adminUser = JSON.parse(localStorage.getItem('mazaki_admin_user'));
+            if (adminUser) {
+                document.getElementById('admin-name-display').innerText = adminUser.username || 'المدير';
+            }
+
+            await loadDashboardStats();
+            await loadRecentOrders(true); // Initial load, don't alert
+
+            // Auto-refresh every 10 seconds for real-time feel
+            setInterval(async () => {
+                await loadDashboardStats();
+                await loadRecentOrders(false); // Check for new orders
+            }, 10000);
+        });
+
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch('/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                const stats = await res.json();
+                
+                document.getElementById('stats-new-orders').innerText = stats.newOrders || 0;
+                document.getElementById('stats-today-orders').innerText = stats.todayOrders || 0;
+                document.getElementById('stats-revenue').innerText = (stats.revenue || 0).toLocaleString();
+                document.getElementById('stats-out-of-stock').innerText = stats.outOfStock || 0;
+
+                updateTrend('stats-new-orders-trend', stats.newOrdersTrend);
+                updateTrend('stats-today-orders-trend', stats.ordersTrend);
+                updateTrend('stats-revenue-trend', stats.revenueTrend);
+            } catch (err) { console.error(err); }
+        }
+
+        function updateTrend(elementId, trendValue) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const isPositive = trendValue >= 0;
+            const absValue = Math.abs(trendValue);
+            el.className = `text-[11px] font-black flex items-center gap-1 ${isPositive ? 'text-green-500' : 'text-red-500'}`;
+            el.innerHTML = `${absValue}% <span class="material-symbols-outlined text-xs">${isPositive ? 'trending_up' : 'trending_down'}</span>`;
+        }
+
+        async function loadRecentOrders(isInitial = false) {
+            try {
+                const res = await fetch('/api/orders', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                const orders = await res.json();
+                
+                if (orders.length > 0) {
+                    const latestOrder = orders[0];
+                    if (!isInitial && latestOrder.id > lastOrderId) {
+                        // New order detected!
+                        playNotification(latestOrder);
+                        lastOrderId = latestOrder.id;
+                        localStorage.setItem('lastOrderId', lastOrderId);
+                    } else if (isInitial) {
+                        lastOrderId = latestOrder.id;
+                        localStorage.setItem('lastOrderId', lastOrderId);
+                    }
+                }
+
+                const container = document.getElementById('recent-orders-list');
+                container.innerHTML = orders.slice(0, 8).map(ord => {
+                    const statusConfig = {
+                        'جديد': 'bg-blue-50 text-blue-500 border-blue-100',
+                        'بانتظار التأكيد': 'bg-blue-50 text-blue-500 border-blue-100',
+                        'قيد التحضير': 'bg-orange-50 text-orange-500 border-orange-100',
+                        'قيد التوصيل': 'bg-purple-50 text-purple-500 border-purple-100',
+                        'مكتمل': 'bg-green-50 text-green-500 border-green-100',
+                        'ملغي': 'bg-red-50 text-red-500 border-red-100'
+                    };
+                    const statusClass = statusConfig[ord.status] || 'bg-gray-50 text-gray-500 border-gray-100';
+                    const time = new Date(ord.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                    const isDelivery = ord.order_type === 'delivery';
+
+                    return `
+                        <tr class="hover:bg-gray-50 transition-colors group">
+                            <td class="px-8 py-5 font-black text-primary text-sm whitespace-nowrap">ORD-${ord.id.toString().padStart(3, '0')}#</td>
+                            <td class="px-8 py-5">
+                                <div class="flex flex-col">
+                                    <span class="font-black text-gray-900">${ord.customer_name}</span>
+                                    <span class="text-[10px] text-gray-400">${ord.customer_phone}</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-2 text-gray-500">
+                                    <span class="material-symbols-outlined text-[18px]">${isDelivery ? 'local_shipping' : 'storefront'}</span>
+                                    <span class="text-xs font-bold">${isDelivery ? 'توصيل' : 'استلام'}</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-xs font-bold text-gray-400">${time}</td>
+                            <td class="px-8 py-5 font-black text-gray-900">${ord.total} ريال</td>
+                            <td class="px-8 py-5">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black border ${statusClass}">${ord.status}</span>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <div class="flex items-center justify-center gap-3">
+                                    <button onclick="window.location.href='order-details.html?id=${ord.id}'" class="text-gray-300 hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                    </button>
+                                    <button onclick="printOrder(${ord.id})" class="text-gray-300 hover:text-gray-600 transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">print</span>
+                                    </button>
+                                    <button onclick="window.location.href='order-details.html?id=${ord.id}&edit=true'" class="text-gray-300 hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function playNotification(order) {
+            // Play sound
+            const sound = document.getElementById('order-sound');
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log('Sound playback failed:', e));
+            }
+
+            // Show popup
+            const container = document.getElementById('notification-container');
+            const popup = document.createElement('div');
+            popup.className = 'bg-white rounded-2xl shadow-2xl border-l-4 border-primary p-5 pointer-events-auto transform transition-all duration-500 translate-y-10 opacity-0 flex flex-col gap-3 ambient-shadow';
+            
+            // Fetch order items for the popup
+            let itemsText = 'جاري التحميل...';
+            try {
+                const res = await fetch(`/api/orders/${order.id}`);
+                const data = await res.json();
+                itemsText = data.items.map(i => `${i.quantity}x ${i.product_name}`).join(', ');
+            } catch(e) {}
+
+            popup.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined">shopping_cart_checkout</span>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm">طلب جديد #${order.id}</h4>
+                            <p class="text-[10px] text-gray-400 font-bold">وصل الآن</p>
+                        </div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-300 hover:text-gray-500">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-xs font-bold text-gray-700"><span class="text-gray-400">العميل:</span> ${order.customer_name}</p>
+                    <p class="text-xs text-gray-500 leading-tight line-clamp-2"><span class="font-bold text-gray-700">الأصناف:</span> ${itemsText}</p>
+                    <p class="text-sm font-black text-primary mt-1">الإجمالي: ${order.total} ريال</p>
+                </div>
+                <a href="order-details.html?id=${order.id}" class="w-full bg-primary text-white text-center py-2 rounded-xl text-xs font-bold hover:bg-primary-container transition-colors mt-1">عرض التفاصيل</a>
+            `;
+
+            container.appendChild(popup);
+            
+            // Animation
+            setTimeout(() => {
+                popup.classList.remove('translate-y-10', 'opacity-0');
+            }, 100);
+
+            // Auto-remove after 15 seconds
+            setTimeout(() => {
+                popup.classList.add('translate-y-[-20px]', 'opacity-0');
+                setTimeout(() => popup.remove(), 500);
+            }, 15000);
+        }
+
+        async function printOrder(id) {
+            try {
+                const res = await fetch(`/api/orders/${id}`);
+                const order = await res.json();
+                const printWindow = window.open('', '_blank', 'width=600,height=800');
+                const itemsHtml = order.items.map(item => `
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.product_name}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">${item.price} ريال</td>
+                    </tr>
+                `).join('');
+
+                printWindow.document.write(`
+                    <html dir="rtl">
+                    <head>
+                        <title>طباعة طلب #${order.id}</title>
+                        <style>
+                            body { font-family: sans-serif; padding: 20px; }
+                            .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                            .details { margin-bottom: 20px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            .total { margin-top: 20px; text-align: left; font-weight: bold; font-size: 1.2em; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>بوفية مذاقي</h1>
+                            <p>فاتورة طلب رقم: #${order.id.toString().padStart(10, '0')}</p>
+                        </div>
+                        <div class="details">
+                            <p><strong>العميل:</strong> ${order.customer_name}</p>
+                            <p><strong>الجوال:</strong> ${order.customer_phone}</p>
+                            <p><strong>التاريخ:</strong> ${new Date(order.created_at).toLocaleString('ar-SA')}</p>
+                            <p><strong>نوع الطلب:</strong> ${order.order_type === 'delivery' ? 'توصيل' : 'استلام من الفرع'}</p>
+                            <p><strong>العنوان:</strong> ${order.address}</p>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr style="background: #f5f5f5;">
+                                    <th style="padding: 8px; text-align: right;">المنتج</th>
+                                    <th style="padding: 8px;">الكمية</th>
+                                    <th style="padding: 8px; text-align: left;">السعر</th>
+                                </tr>
+                            </thead>
+                            <tbody>${itemsHtml}</tbody>
+                        </table>
+                        <div class="total">
+                            <p>المجموع الفرعي: ${order.subtotal} ريال</p>
+                            <p>رسوم التوصيل: ${order.delivery_fee} ريال</p>
+                            ${order.discount_amount ? `<p>الخصم: -${order.discount_amount} ريال</p>` : ''}
+                            <hr>
+                            <p>الإجمالي النهائي: ${order.total} ريال</p>
+                        </div>
+                        <script>window.onload = function() { window.print(); window.close(); }<\/script>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            } catch (err) { console.error('Print error:', err); }
+        }
+    </script>
+</body>
+
+</html>

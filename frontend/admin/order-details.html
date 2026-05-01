@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>تفاصيل الطلب - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#964900",
+                        "primary-container": "#f57c00",
+                        "background": "#f4faff",
+                        "on-background": "#111d23",
+                        "surface": "#ffffff",
+                        "on-surface": "#111d23",
+                        "on-surface-variant": "#574235",
+                        "surface-container": "#e3f0f8",
+                        "surface-container-low": "#e9f6fd",
+                        "surface-dim": "#cfdce4",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Almarai', sans-serif; }
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(0,0,0,0.05); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+    <!-- SideNavBar -->
+    <aside class="bg-gray-50 dark:bg-gray-950 font-sans text-sm font-medium h-screen w-64 border-l border-gray-200 dark:border-gray-800 hidden md:flex flex-col fixed right-0 top-0 h-full z-40">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <h1 class="text-xl font-black text-gray-900 dark:text-white">بوفية مذاقي</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">لوحة الإدارة</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col gap-2 overflow-y-auto" id="admin-nav">
+            <!-- JS filled -->
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 md:mr-64 w-full min-h-screen">
+        <!-- Top Navigation -->
+        <header class="bg-white/95 border-b border-gray-100 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm backdrop-blur-md">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden text-gray-600">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="font-black text-lg text-on-background">تفاصيل الطلب</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4 relative">
+
+                    <!-- User Profile Dropdown -->
+                    <div class="relative group">
+                        <button class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-primary font-black border border-orange-100 hover:bg-primary hover:text-white transition-all cursor-pointer">أ</button>
+                        <div class="absolute left-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="p-4 border-b border-gray-50">
+                                <p class="font-black text-gray-900" id="admin-name-display">المدير العام</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">مدير النظام</p>
+                            </div>
+                            <div class="p-2">
+                                <button onclick="adminLogout()" class="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors font-bold text-sm">
+                                    <span class="material-symbols-outlined text-lg">logout</span> تسجيل الخروج
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6 md:p-10">
+            <!-- Action Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-2xl font-black text-on-background" id="order-id-display">طلب #000</h1>
+                    <span id="order-status-badge" class="px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 font-black text-xs border border-orange-200">جديد</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Update Status Dropdown -->
+                    <div class="relative inline-block text-right">
+                        <select id="status-select" onchange="updateStatus()" class="appearance-none bg-primary text-white font-bold py-3 pr-6 pl-12 rounded-xl shadow-lg shadow-orange-100 border-none cursor-pointer focus:ring-2 focus:ring-primary-container transition-all">
+                            <option value="جديد">جديد</option>
+                            <option value="بانتظار التأكيد">بانتظار التأكيد</option>
+                            <option value="قيد التحضير">قيد التحضير</option>
+                            <option value="جاهز للاستلام">جاهز للاستلام</option>
+                            <option value="في التوصيل">في التوصيل</option>
+                            <option value="مكتمل">مكتمل</option>
+                            <option value="ملغي">ملغي</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white pointer-events-none">expand_more</span>
+                    </div>
+                    
+                    <div id="view-actions" class="flex flex-wrap items-center gap-4">
+                        <button onclick="enableEditMode()" class="bg-white border-2 border-gray-200 text-on-surface-variant font-bold py-3 px-6 rounded-xl hover:bg-gray-50 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">edit</span> تعديل العناصر
+                        </button>
+                        <button onclick="printOrder(currentOrderId)" class="bg-white border-2 border-primary text-primary font-bold py-3 px-6 rounded-xl hover:bg-orange-50 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">print</span> طباعة الفاتورة
+                        </button>
+                    </div>
+                    <div id="edit-actions" class="hidden flex flex-wrap items-center gap-4">
+                        <button onclick="openProductModal()" class="bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-container transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">add_circle</span> إضافة منتج
+                        </button>
+                        <button onclick="saveOrderItems()" class="bg-green-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-green-700 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">save</span> حفظ التعديلات
+                        </button>
+                        <button onclick="cancelEditMode()" class="bg-gray-100 text-gray-600 font-bold py-3 px-6 rounded-xl hover:bg-gray-200 transition-all">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Side Sections -->
+                <div class="lg:col-span-4 space-y-8">
+                    <!-- Customer Info -->
+                    <section class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="material-symbols-outlined text-primary">person</span>
+                            <h3 class="font-black text-on-background">معلومات العميل</h3>
+                        </div>
+                        <div class="space-y-4 text-right">
+                            <p id="customer-name" class="text-lg font-black text-on-background">...</p>
+                            <p id="customer-email" class="text-sm font-bold text-primary">...</p>
+                            <p id="customer-phone" dir="ltr" class="text-sm font-bold text-gray-500">...</p>
+                            <p id="delivery-address" class="text-xs text-gray-400 leading-relaxed">...</p>
+                        </div>
+                    </section>
+
+                    <!-- Delivery Details -->
+                    <section class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="material-symbols-outlined text-primary">local_shipping</span>
+                            <h3 class="font-black text-on-background">تفاصيل التوصيل</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-400 font-bold">الطريقة</span>
+                                <span id="order-type-display" class="font-black text-on-background">توصيل للمنزل</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-400 font-bold">الوقت المتوقع</span>
+                                <span id="estimated-time-display" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-[10px] font-black tracking-wider">...</span>
+                            </div>
+                            <div class="pt-4 border-t border-gray-50">
+                                <span class="text-[10px] text-gray-400 font-bold block mb-2">ملاحظة:</span>
+                                <p id="order-notes" class="text-xs text-gray-500 bg-gray-50 p-3 rounded-xl italic">لا توجد ملاحظات</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Payment Info -->
+                    <section class="bg-white rounded-2xl p-6 ambient-shadow border border-gray-50">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="material-symbols-outlined text-primary">payments</span>
+                            <h3 class="font-black text-on-background">معلومات الدفع</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-400 font-bold">الطريقة</span>
+                                <span id="payment-method" class="font-black text-on-background">...</span>
+                            </div>
+                            <!-- Transfer fields (shown only for transfer payments) -->
+                            <div id="transfer-details" class="hidden space-y-3 pt-3 border-t border-gray-50">
+                                <p class="text-[10px] font-black text-primary uppercase tracking-wider mb-2">بيانات التحويل</p>
+                                <div class="flex justify-between items-center text-sm bg-orange-50 p-3 rounded-xl">
+                                    <span class="text-gray-400 font-bold">رقم السند</span>
+                                    <span id="transfer-ref-display" class="font-black text-primary">-</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm bg-orange-50 p-3 rounded-xl">
+                                    <span class="text-gray-400 font-bold">اسم المرسل</span>
+                                    <span id="transfer-sender-display" class="font-black text-on-background">-</span>
+                                </div>
+                            </div>
+                            <div id="proof-container" class="hidden pt-4 border-t border-gray-50">
+                                <p class="text-[10px] text-gray-400 font-bold mb-3">إيصال التحويل:</p>
+                                <a id="proof-link" href="#" target="_blank">
+                                    <img id="order-proof" class="w-full rounded-xl border border-gray-100 shadow-sm hover:opacity-90 transition-all cursor-zoom-in" src="">
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Main Content -->
+                <div class="lg:col-span-8 space-y-8">
+                    <!-- Order Items -->
+                    <section class="bg-white rounded-3xl ambient-shadow border border-gray-50 overflow-hidden">
+                        <div class="p-6 bg-gray-50/50 border-b border-gray-100">
+                            <h3 class="font-black text-on-background">عناصر الطلب</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right border-collapse">
+                                <thead>
+                                    <tr class="text-[11px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                                        <th class="px-8 py-5">المنتج</th>
+                                        <th class="px-8 py-5">الكمية</th>
+                                        <th class="px-8 py-5">سعر الوحدة</th>
+                                        <th class="px-8 py-5">المجموع</th>
+                                        <th class="px-8 py-5 text-center edit-only hidden">إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="order-items-list" class="divide-y divide-gray-50">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Order Summary -->
+                    <section class="bg-white rounded-3xl p-8 ambient-shadow border border-gray-50">
+                        <h3 class="font-black text-on-background mb-8 border-b border-gray-50 pb-4">ملخص الطلب</h3>
+                        <div class="space-y-4 max-w-sm mr-auto">
+                            <div class="flex justify-between items-center text-sm font-bold text-gray-500">
+                                <span>المجموع الفرعي</span>
+                                <span id="subtotal">... ر.س</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm font-bold text-gray-500">
+                                <span>رسوم التوصيل</span>
+                                <span id="delivery-fee">... ر.س</span>
+                            </div>
+                            <div id="discount-row" class="hidden flex justify-between items-center text-sm font-bold text-green-600">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">local_offer</span>
+                                    خصم (<span id="coupon-code-display" class="font-black"></span>)
+                                </span>
+                                <span id="discount-amount">- ... ر.س</span>
+                            </div>
+                            <div class="pt-6 border-t-2 border-gray-50 flex justify-between items-center">
+                                <span class="text-lg font-black text-on-background uppercase tracking-wider">المجموع الكلي</span>
+                                <span id="total-price" class="text-2xl font-black text-primary">... ر.س</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Selection Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-xl font-black">إضافة منتج للطلب</h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <input type="text" id="product-search" oninput="filterProducts()" placeholder="ابحث عن منتج..." class="w-full p-4 rounded-xl border border-gray-100 bg-gray-50 mb-6 focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Products filled by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        let currentOrderId;
+        let orderData = null;
+        let editableItems = [];
+        let allProducts = [];
+        let isEditing = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isAdmin()) return window.location.href = 'login.html';
+            
+            const adminUser = JSON.parse(localStorage.getItem('mazaki_admin_user'));
+            if (adminUser) {
+                document.getElementById('admin-name-display').innerText = adminUser.username || 'المدير';
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            currentOrderId = urlParams.get('id');
+            const shouldEdit = urlParams.get('edit') === 'true';
+
+            if (currentOrderId) {
+                await loadOrderDetails();
+                await fetchAllProducts();
+                if (shouldEdit) enableEditMode();
+            }
+        });
+
+        async function fetchAllProducts() {
+            try {
+                const res = await fetch('/api/products');
+                allProducts = await res.json();
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadOrderDetails() {
+            try {
+                const res = await fetch(`/api/orders/${currentOrderId}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                orderData = await res.json();
+                editableItems = JSON.parse(JSON.stringify(orderData.items)); // Deep copy
+                
+                document.getElementById('order-id-display').innerText = `طلب ORD-${orderData.id.toString().padStart(3, '0')}#`;
+                
+                const statusBadge = document.getElementById('order-status-badge');
+                statusBadge.innerText = orderData.status;
+                const statusConfig = {
+                    'جديد': 'bg-blue-100 text-blue-600 border-blue-200',
+                    'بانتظار التأكيد': 'bg-blue-100 text-blue-600 border-blue-200',
+                    'قيد التحضير': 'bg-orange-100 text-orange-600 border-orange-200',
+                    'مكتمل': 'bg-green-100 text-green-600 border-green-200',
+                    'ملغي': 'bg-red-100 text-red-600 border-red-200'
+                };
+                statusBadge.className = `px-4 py-1.5 rounded-full font-black text-xs border ${statusConfig[orderData.status] || 'bg-gray-100 text-gray-600'}`;
+                
+                document.getElementById('status-select').value = orderData.status;
+                document.getElementById('customer-name').innerText = orderData.customer_name;
+                document.getElementById('customer-email').innerText = orderData.customer_email || 'لا يوجد بريد';
+                document.getElementById('customer-phone').innerText = orderData.customer_phone;
+                document.getElementById('delivery-address').innerText = orderData.address || 'لا يوجد عنوان';
+                document.getElementById('order-notes').innerText = orderData.notes || 'لا توجد ملاحظات';
+                document.getElementById('order-type-display').innerText = orderData.order_type === 'delivery' ? 'توصيل للمنزل' : 'استلام من البوفية';
+
+                // Update estimated time
+                const estTimeEl = document.getElementById('estimated-time-display');
+                if (orderData.order_type === 'pickup') {
+                    estTimeEl.innerText = '15-20 دقيقة';
+                } else {
+                    estTimeEl.innerText = orderData.estimated_delivery_time || '20-30 دقيقة';
+                }
+
+                const pMethods = {
+                    'cod': 'الدفع عند الاستلام',
+                    'alamqi': 'تحويل العمقي',
+                    'bindoal': 'تحويل بن دول'
+                };
+                document.getElementById('payment-method').innerText = pMethods[orderData.payment_method] || orderData.payment_method || 'الدفع عند الاستلام';
+
+                // Show transfer details if applicable
+                const isTransfer = orderData.payment_method === 'alamqi' || orderData.payment_method === 'bindoal';
+                if (isTransfer) {
+                    document.getElementById('transfer-details').classList.remove('hidden');
+                    document.getElementById('transfer-ref-display').innerText = orderData.transfer_reference || '-';
+                    document.getElementById('transfer-sender-display').innerText = orderData.transfer_sender || '-';
+                }
+
+                if (orderData.transfer_proof) {
+                    document.getElementById('proof-container').classList.remove('hidden');
+                    document.getElementById('order-proof').src = `..${orderData.transfer_proof}`;
+                    document.getElementById('proof-link').href = `..${orderData.transfer_proof}`;
+                }
+
+                renderItems();
+                updateSummary();
+            } catch (err) { console.error(err); }
+        }
+
+        function renderItems() {
+            const itemsList = document.getElementById('order-items-list');
+            itemsList.innerHTML = editableItems.map((item, index) => `
+                <tr class="group hover:bg-gray-50/50 transition-colors">
+                    <td class="px-8 py-5">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.image_url || '../images/placeholder-food.jpg'}" class="w-14 h-14 rounded-2xl object-cover border border-gray-100 shadow-sm" />
+                            <span class="font-black text-gray-900">${item.product_name}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        ${isEditing ? `
+                            <div class="flex items-center gap-2">
+                                <button onclick="changeQty(${index}, -1)" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">remove</span>
+                                </button>
+                                <span class="w-8 text-center font-bold">${item.quantity}</span>
+                                <button onclick="changeQty(${index}, 1)" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                </button>
+                            </div>
+                        ` : `<span class="text-gray-600 font-bold">${item.quantity}</span>`}
+                    </td>
+                    <td class="px-8 py-5 text-gray-600 font-bold">${item.price} ر.س</td>
+                    <td class="px-8 py-5 font-black text-primary text-lg">${(item.price * item.quantity).toFixed(2)} ر.س</td>
+                    <td class="px-8 py-5 text-center edit-only ${isEditing ? '' : 'hidden'}">
+                        <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-600 transition-colors">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateSummary() {
+            let subtotal, total, deliveryFee, discount;
+
+            if (isEditing) {
+                subtotal = editableItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                deliveryFee = orderData.delivery_fee || 0;
+                discount = orderData.discount_amount || 0;
+                total = subtotal + deliveryFee - discount;
+            } else {
+                subtotal = orderData.subtotal;
+                deliveryFee = orderData.delivery_fee;
+                discount = orderData.discount_amount;
+                total = orderData.total;
+            }
+
+            document.getElementById('subtotal').innerText = `${subtotal.toFixed(2)} ر.س`;
+            document.getElementById('delivery-fee').innerText = `${deliveryFee.toFixed(2)} ر.س`;
+            document.getElementById('total-price').innerText = `${total.toFixed(2)} ر.س`;
+
+            // Discount row
+            if (discount > 0 || orderData.coupon_code) {
+                document.getElementById('discount-row').classList.remove('hidden');
+                document.getElementById('discount-amount').innerText = `- ${discount.toFixed(2)} ر.س`;
+                document.getElementById('coupon-code-display').innerText = orderData.coupon_code || 'كود غير معروف';
+            } else {
+                document.getElementById('discount-row').classList.add('hidden');
+            }
+
+            return { subtotal, total };
+        }
+
+        function enableEditMode() {
+            isEditing = true;
+            document.getElementById('view-actions').classList.add('hidden');
+            document.getElementById('edit-actions').classList.remove('hidden');
+            renderItems();
+            document.querySelectorAll('.edit-only').forEach(el => el.classList.remove('hidden'));
+        }
+
+        function cancelEditMode() {
+            isEditing = false;
+            document.getElementById('view-actions').classList.remove('hidden');
+            document.getElementById('edit-actions').classList.add('hidden');
+            loadOrderDetails(); // Reset to original data
+            document.querySelectorAll('.edit-only').forEach(el => el.classList.add('hidden'));
+        }
+
+        function changeQty(index, delta) {
+            editableItems[index].quantity += delta;
+            if (editableItems[index].quantity < 1) editableItems[index].quantity = 1;
+            renderItems();
+            updateSummary();
+        }
+
+        function removeItem(index) {
+            editableItems.splice(index, 1);
+            renderItems();
+            updateSummary();
+        }
+
+        async function saveOrderItems() {
+            if (editableItems.length === 0) return alert('لا يمكن حفظ طلب بدون عناصر');
+            
+            const { subtotal, total } = updateSummary();
+            
+            try {
+                const res = await fetch(`/api/orders/${currentOrderId}/update-items`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}`
+                    },
+                    body: JSON.stringify({ 
+                        items: editableItems,
+                        subtotal,
+                        total
+                    })
+                });
+                
+                if (res.ok) {
+                    isEditing = false;
+                    document.getElementById('view-actions').classList.remove('hidden');
+                    document.getElementById('edit-actions').classList.add('hidden');
+                    document.querySelectorAll('.edit-only').forEach(el => el.classList.add('hidden'));
+                    await loadOrderDetails();
+                    alert('تم تحديث الطلب بنجاح');
+                }
+            } catch (err) { alert('خطأ في حفظ التعديلات'); }
+        }
+
+        // Product Modal Logic
+        function openProductModal() {
+            document.getElementById('product-modal').style.display = 'flex';
+            filterProducts();
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('product-search').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+            const list = document.getElementById('product-list');
+            
+            list.innerHTML = filtered.map(p => `
+                <div onclick="addProductToOrder(${p.id})" class="flex items-center gap-4 p-4 border border-gray-100 rounded-2xl hover:bg-orange-50 cursor-pointer transition-all">
+                    <img src="${p.image_url || '../images/placeholder-food.jpg'}" class="w-12 h-12 rounded-xl object-cover">
+                    <div>
+                        <p class="font-bold text-sm">${p.name}</p>
+                        <p class="text-xs text-primary">${p.price} ر.س</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addProductToOrder(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            const existing = editableItems.find(item => item.product_id === productId);
+            
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                editableItems.push({
+                    product_id: product.id,
+                    product_name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    image_url: product.image_url
+                });
+            }
+            
+            renderItems();
+            updateSummary();
+            closeProductModal();
+        }
+
+        async function updateStatus() {
+            const newStatus = document.getElementById('status-select').value;
+            try {
+                const res = await fetch(`/api/orders/${currentOrderId}/status`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (res.ok) await loadOrderDetails();
+            } catch (err) { alert('خطأ في تحديث الحالة'); }
+        }
+
+        async function printOrder(id) {
+            try {
+                const res = await fetch(`/api/orders/${id}`);
+                const order = await res.json();
+                const printWindow = window.open('', '_blank', 'width=600,height=800');
+                const itemsHtml = order.items.map(item => `
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.product_name}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">${item.price} ريال</td>
+                    </tr>
+                `).join('');
+
+                printWindow.document.write(`
+                    <html dir="rtl">
+                    <head>
+                        <title>طباعة طلب #${order.id}</title>
+                        <style>
+                            body { font-family: sans-serif; padding: 20px; }
+                            .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                            .details { margin-bottom: 20px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            .total { margin-top: 20px; text-align: left; font-weight: bold; font-size: 1.2em; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>بوفية مذاقي</h1>
+                            <p>فاتورة طلب رقم: #${order.id.toString().padStart(10, '0')}</p>
+                        </div>
+                        <div class="details">
+                            <p><strong>العميل:</strong> ${order.customer_name}</p>
+                            <p><strong>البريد:</strong> ${order.customer_email || '-'}</p>
+                            <p><strong>الجوال:</strong> ${order.customer_phone}</p>
+                            <p><strong>التاريخ:</strong> ${new Date(order.created_at).toLocaleString('ar-SA')}</p>
+                            <p><strong>نوع الطلب:</strong> ${order.order_type === 'delivery' ? 'توصيل' : 'استلام من الفرع'}</p>
+                            <p><strong>العنوان:</strong> ${order.address}</p>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr style="background: #f5f5f5;">
+                                    <th style="padding: 8px; text-align: right;">المنتج</th>
+                                    <th style="padding: 8px;">الكمية</th>
+                                    <th style="padding: 8px; text-align: left;">السعر</th>
+                                </tr>
+                            </thead>
+                            <tbody>${itemsHtml}</tbody>
+                        </table>
+                        <div class="total">
+                            <p>المجموع الفرعي: ${order.subtotal} ريال</p>
+                            <p>رسوم التوصيل: ${order.delivery_fee} ريال</p>
+                            ${order.discount_amount ? `<p>الخصم: -${order.discount_amount} ريال</p>` : ''}
+                            <hr>
+                            <p>الإجمالي النهائي: ${order.total} ريال</p>
+                        </div>
+                        <script>
+                            window.onload = function() { window.print(); window.close(); }
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            } catch (err) { console.error('Print error:', err); }
+        }
+    </script>
+</body>
+</html>

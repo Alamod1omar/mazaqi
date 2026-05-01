@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>إدارة العملاء - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#f57c00",
+                        "primary-container": "#e65100",
+                        "background": "#f4faff",
+                        "on-background": "#111d23",
+                        "surface": "#ffffff",
+                        "on-surface": "#111d23",
+                        "on-surface-variant": "#574235",
+                        "surface-container": "#e3f0f8",
+                        "surface-container-low": "#e9f6fd",
+                        "surface-dim": "#cfdce4",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Almarai', sans-serif; }
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(0,0,0,0.05); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .modal-open { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+    <!-- SideNavBar -->
+    <aside class="bg-gray-50 dark:bg-gray-950 font-sans text-sm font-medium h-screen w-64 border-l border-gray-200 dark:border-gray-800 hidden md:flex flex-col fixed right-0 top-0 h-full z-40">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <h1 class="text-xl font-black text-gray-900 dark:text-white">بوفية مذاقي</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">لوحة الإدارة</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col gap-2 overflow-y-auto" id="admin-nav">
+            <!-- JS filled -->
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 md:mr-64 w-full min-h-screen">
+        <header class="bg-white/95 border-b border-gray-100 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm backdrop-blur-md">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden text-gray-600">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="font-black text-lg text-on-background">إدارة العملاء</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative group">
+                    <button class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-primary font-black border border-orange-100">
+                        أ
+                    </button>
+                    <div class="absolute left-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                        <div class="p-4 border-b border-gray-50">
+                            <p class="font-black text-sm text-gray-900" id="admin-name-display">المدير</p>
+                        </div>
+                        <button onclick="adminLogout()" class="w-full text-right p-3 text-red-500 hover:bg-red-50 text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">logout</span>
+                            تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6 md:p-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <div class="relative flex-1 w-full max-w-md">
+                    <input type="text" id="user-search" oninput="searchUsers()" placeholder="البحث باسم العميل أو رقم الهاتف..." class="w-full bg-white border-none rounded-xl py-3 pr-12 text-sm shadow-sm focus:ring-2 focus:ring-primary/20 transition-all">
+                    <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                </div>
+            </div>
+
+            <section class="bg-white rounded-2xl ambient-shadow border border-gray-50 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right">
+                        <thead>
+                            <tr class="bg-gray-50/50 text-[12px] font-black text-gray-400 border-b border-gray-100 uppercase tracking-wider">
+                                <th class="px-8 py-5">العميل</th>
+                                <th class="px-8 py-5">رقم الهاتف</th>
+                                <th class="px-8 py-5">تاريخ الانضمام</th>
+                                <th class="px-8 py-5 text-center">الطلبات</th>
+                                <th class="px-8 py-5">الحالة</th>
+                                <th class="px-8 py-5 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-list-body" class="divide-y divide-gray-50">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 border-t border-gray-50 bg-gray-50/30 flex justify-between items-center">
+                    <p class="text-xs text-gray-500 font-bold" id="pagination-info">جاري التحميل...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeEditModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div class="p-8 border-b border-gray-50 bg-orange-50/30">
+                    <h3 class="text-xl font-black text-gray-900">تعديل بيانات العميل</h3>
+                    <p class="text-xs text-gray-400 mt-1">تحديث معلومات الحساب وكلمة المرور</p>
+                </div>
+                <form id="edit-user-form" class="p-8 space-y-6" onsubmit="handleUpdateUser(event)">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">الاسم الكامل</label>
+                                <input type="text" id="edit-user-name" required class="bg-gray-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 transition-all">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">البريد الإلكتروني</label>
+                                <input type="email" id="edit-user-email" class="bg-gray-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 transition-all text-right" dir="ltr">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">رقم الهاتف</label>
+                                <input type="tel" id="edit-user-phone" required class="bg-gray-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 transition-all text-right" dir="ltr">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">منطقة التوصيل</label>
+                                <select id="edit-user-zone" class="bg-gray-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 transition-all">
+                                    <option value="">غير محدد</option>
+                                    <!-- Filled by JS -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-gray-50">
+                            <label class="text-[10px] font-black text-red-400 uppercase tracking-widest mr-2">تغيير كلمة المرور (اختياري)</label>
+                            <input type="password" id="edit-user-password" placeholder="اتركها فارغة لعدم التغيير" class="bg-red-50/30 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-red-100 transition-all">
+                        </div>
+                    </div>
+                    <div class="flex gap-4 pt-4">
+                        <button type="submit" class="flex-1 bg-primary text-white font-black py-4 rounded-2xl hover:bg-opacity-90 shadow-lg shadow-orange-100 transition-all active:scale-95">حفظ التغييرات</button>
+                        <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-100 text-gray-500 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all active:scale-95">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        let allUsers = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isAdmin()) return window.location.href = 'login.html';
+            
+            const adminUser = JSON.parse(localStorage.getItem('mazaki_admin_user'));
+            if (adminUser) {
+                document.getElementById('admin-name-display').innerText = adminUser.username || 'المدير';
+            }
+
+            await loadUsers();
+        });
+
+        async function loadUsers() {
+            const container = document.getElementById('users-list-body');
+            try {
+                // Load zones for modal in background
+                loadZonesForModal();
+
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    container.innerHTML = `<tr><td colspan="6" class="py-20 text-center text-red-500 font-bold">خطأ: ${err.message}</td></tr>`;
+                    return;
+                }
+
+                allUsers = await res.json();
+                renderUsers(allUsers);
+            } catch (err) {
+                console.error('Load Users Error:', err);
+                container.innerHTML = `<tr><td colspan="6" class="py-20 text-center text-red-500 font-bold">فشل الاتصال بالخادم</td></tr>`;
+            }
+        }
+
+        async function loadZonesForModal() {
+            const select = document.getElementById('edit-user-zone');
+            if (select.children.length > 1) return; // Already loaded
+
+            try {
+                const res = await fetch('/api/delivery-zones');
+                const zones = await res.json();
+                zones.forEach(z => {
+                    const opt = document.createElement('option');
+                    opt.value = z.zone_name;
+                    opt.textContent = z.zone_name;
+                    select.appendChild(opt);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        function renderUsers(users) {
+            const container = document.getElementById('users-list-body');
+            document.getElementById('pagination-info').innerText = `إجمالي المسجلين: ${users.length} عميل`;
+
+            if (users.length === 0) {
+                container.innerHTML = `<tr><td colspan="6" class="py-20 text-center text-gray-400 font-bold">لا يوجد عملاء يطابقون بحثك</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = users.map(user => {
+                const initials = (user.full_name || 'U').split(' ').map(n => n ? n[0] : '').join('').substring(0, 2);
+                const regDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ar-SA') : '---';
+
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-orange-50 text-primary flex items-center justify-center font-black text-xs">
+                                    ${initials}
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-black text-gray-900">${user.full_name}</span>
+                                    <span class="text-[10px] text-gray-400">${user.email || 'بدون إيميل'} | #${user.id}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 font-bold text-gray-600">
+                            <div class="flex flex-col">
+                                <span dir="ltr">${user.phone}</span>
+                                <span class="text-[10px] text-gray-400 font-bold">${user.delivery_zone || 'المنطقة: غير محدد'}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 text-xs text-gray-400 font-bold">${regDate}</td>
+                        <td class="px-8 py-5 text-center font-black text-primary">${user.total_orders || 0}</td>
+                        <td class="px-8 py-5">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black border bg-green-50 text-green-600 border-green-100">نشط</span>
+                        </td>
+                        <td class="px-8 py-5">
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="openEditModal(${user.id})" class="text-gray-300 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </button>
+                                <button onclick="deleteUser(${user.id})" class="text-gray-300 hover:text-red-500 transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function searchUsers() {
+            const query = document.getElementById('user-search').value.toLowerCase();
+            const filtered = allUsers.filter(u => 
+                u.full_name.toLowerCase().includes(query) || 
+                u.phone.toLowerCase().includes(query) ||
+                (u.email && u.email.toLowerCase().includes(query))
+            );
+            renderUsers(filtered);
+        }
+
+        function openEditModal(id) {
+            const user = allUsers.find(u => u.id === id);
+            if (!user) return;
+
+            document.getElementById('edit-user-id').value = user.id;
+            document.getElementById('edit-user-name').value = user.full_name;
+            document.getElementById('edit-user-email').value = user.email || '';
+            document.getElementById('edit-user-phone').value = user.phone;
+            document.getElementById('edit-user-zone').value = user.delivery_zone || '';
+            document.getElementById('edit-user-password').value = '';
+
+            document.getElementById('edit-user-modal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-user-modal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        async function handleUpdateUser(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const data = {
+                full_name: document.getElementById('edit-user-name').value,
+                email: document.getElementById('edit-user-email').value,
+                phone: document.getElementById('edit-user-phone').value,
+                delivery_zone: document.getElementById('edit-user-zone').value,
+                password: document.getElementById('edit-user-password').value
+            };
+
+            try {
+                const res = await fetch(`/api/admin/users/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` 
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    if (typeof showToast === 'function') showToast('تم حفظ جميع التغييرات بنجاح');
+                    else alert('تم حفظ جميع التغييرات بنجاح');
+                    closeEditModal();
+                    loadUsers();
+                } else {
+                    const err = await res.json();
+                    const msg = 'خطأ: ' + err.message;
+                    if (typeof showToast === 'function') showToast(msg);
+                    else alert(msg);
+                }
+            } catch (err) {
+                if (typeof showToast === 'function') showToast('فشل الاتصال بالخادم');
+                else alert('فشل الاتصال بالخادم');
+            }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
+            try {
+                const res = await fetch(`/api/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                if (res.ok) loadUsers();
+            } catch (err) { alert('خطأ في الحذف'); }
+        }
+    </script>
+</body>
+</html>

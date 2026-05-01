@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>الملف الشخصي - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#964900",
+                        "primary-container": "#f57c00",
+                        "background": "#f4faff",
+                        "surface": "#f4faff",
+                        "on-background": "#111d23",
+                        "on-surface-variant": "#574235",
+                        "surface-container-lowest": "#ffffff"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Almarai', sans-serif;
+        }
+
+        @keyframes slide-up {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
+        }
+
+        input, select, textarea {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation -->
+    <nav id="top-nav" class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 h-16">
+    </nav>
+
+    <!-- Mobile Bottom Navigation -->
+    <div id="bottom-nav"
+        class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white rounded-t-3xl z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t">
+    </div>
+
+    <script src="js/customer-nav.js"></script>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 py-8 mt-16 mb-24 md:mb-12">
+        <div id="logged-in-view" class="hidden">
+            <div class="mb-12 text-center">
+                <h1 class="text-4xl font-black text-on-background mb-2">الملف الشخصي</h1>
+                <p class="text-on-surface-variant">إدارة معلوماتك الشخصية، العناوين، والإعدادات.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Sidebar -->
+                <aside class="lg:col-span-4 flex flex-col gap-6">
+                    <!-- User Card -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm flex flex-col items-center text-center">
+                        <div
+                            class="w-24 h-24 rounded-full bg-orange-50 mb-4 flex items-center justify-center border-4 border-white shadow-sm relative">
+                            <span class="material-symbols-outlined text-4xl text-primary">person</span>
+                        </div>
+                        <h2 class="text-2xl font-black" id="user-display-name">...</h2>
+                        <p class="text-on-surface-variant mb-6" id="user-display-phone">...</p>
+
+                        <!-- Account Settings Card -->
+                        <div class="w-full bg-white rounded-2xl p-4 shadow-sm border border-gray-50 text-right">
+                            <h3 class="font-black text-lg mb-6 px-2 text-on-background">إعدادات الحساب</h3>
+                            <div class="flex flex-col gap-2">
+                                <button onclick="openPasswordModal()"
+                                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-all group text-right">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="material-symbols-outlined text-gray-400 group-hover:text-primary">lock</span>
+                                        <span class="font-bold text-on-surface-variant group-hover:text-on-background">تغيير
+                                            كلمة المرور</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-gray-300 text-sm">chevron_left</span>
+                                </button>
+
+                                <button onclick="logout()"
+                                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-red-50 transition-all group mt-4">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="material-symbols-outlined text-red-500 group-hover:text-red-600 transition-colors">logout</span>
+                                        <span class="font-black text-red-500 group-hover:text-red-600 transition-colors">تسجيل
+                                            الخروج</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Profile Info -->
+                <div class="lg:col-span-8 space-y-8">
+                    <!-- Personal Info -->
+                    <section class="bg-white rounded-2xl p-8 shadow-sm">
+                        <h2 class="text-xl font-black mb-8 flex items-center gap-3 text-right">
+                            <span class="material-symbols-outlined text-primary"
+                                style="font-variation-settings: 'FILL' 1;">person</span>
+                            المعلومات الشخصية
+                        </h2>
+                        <form id="profile-form" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-bold mb-2 text-gray-500 text-right">الاسم الكامل</label>
+                                    <input id="edit-name" required
+                                        class="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary font-bold"
+                                        type="text" />
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-bold mb-2 text-gray-500 text-right">البريد الإلكتروني</label>
+                                    <input id="edit-email"
+                                        class="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary text-right font-bold"
+                                        dir="ltr" type="email" placeholder="example@mail.com" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-2 text-gray-500 text-right">رقم الهاتف</label>
+                                    <input id="edit-phone" disabled
+                                        class="w-full bg-gray-100 border-none rounded-xl p-4 opacity-60 cursor-not-allowed font-bold"
+                                        type="text" dir="ltr" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-2 text-gray-500 text-right">منطقة التوصيل</label>
+                                    <select id="edit-zone"
+                                        class="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary font-bold">
+                                        <option value="">غير محدد</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex justify-end pt-4">
+                                <button type="submit" id="save-profile-btn"
+                                    class="bg-primary text-white font-bold px-10 py-4 rounded-xl hover:bg-primary-container transition-all shadow-lg shadow-orange-100">
+                                    حفظ التغييرات
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Saved Addresses -->
+                    <section class="bg-white rounded-2xl p-8 shadow-sm">
+                        <h2 class="text-xl font-black mb-6 flex items-center gap-3 text-right">
+                            <span class="material-symbols-outlined text-primary">location_on</span>
+                            العناوين المحفوظة
+                        </h2>
+                        <div id="saved-addresses-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logged Out View -->
+        <div id="logged-out-view" class="hidden text-center py-20 bg-white rounded-3xl shadow-sm p-12">
+            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-5xl text-gray-300">account_circle</span>
+            </div>
+            <h2 class="text-2xl font-black mb-4">أنت غير مسجل دخول</h2>
+            <p class="text-gray-500 mb-8">يرجى تسجيل الدخول للوصول إلى ملفك الشخصي وطلباتك.</p>
+            <a href="login.html"
+                class="inline-block bg-primary text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-orange-100 hover:scale-105 transition-transform">
+                تسجيل الدخول الآن
+            </a>
+        </div>
+    </main>
+
+    <!-- Address Modal (Add/Edit) -->
+    <div id="address-modal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4" style="display: none;">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeAddressModal()"></div>
+        <div class="relative w-full max-w-md bg-white rounded-[32px] p-8 shadow-2xl animate-slide-up overflow-hidden text-right">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-black text-gray-900" id="modal-title">إضافة عنوان جديد</h3>
+                <button onclick="closeAddressModal()"
+                    class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700 text-right">العنوان التفصيلي</label>
+                    <textarea id="modal-address-input"
+                        class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-primary focus:border-transparent font-bold text-gray-900 placeholder-gray-400 transition-all text-right"
+                        rows="3" placeholder="مثال: بجانب المدرسة، مقابل المسجد، الدور الثاني..."></textarea>
+                </div>
+                <button onclick="handleAddressSave()" id="save-address-btn"
+                    class="w-full bg-primary text-white font-bold py-5 rounded-2xl shadow-xl shadow-orange-100 hover:bg-primary-container hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    حفظ العنوان
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal" class="hidden fixed inset-0 z-[110] items-center justify-center p-4" style="display: none;">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="relative w-full max-w-sm bg-white rounded-[32px] p-8 shadow-2xl animate-slide-up text-center">
+            <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-red-500 text-4xl">delete_forever</span>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 mb-4">تأكيد الحذف</h3>
+            <p class="text-gray-500 mb-8 font-bold">هل أنت متأكد من حذف هذا العنوان؟</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="confirmDelete()" id="confirm-delete-btn"
+                    class="w-full bg-red-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-red-100 hover:bg-red-600 transition-all">
+                    نعم، حذف
+                </button>
+                <button onclick="closeDeleteModal()"
+                    class="w-full bg-gray-50 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-100 transition-all">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="password-modal" class="hidden fixed inset-0 z-[120] items-center justify-center p-4" style="display: none;">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closePasswordModal()"></div>
+        <div class="relative w-full max-w-md bg-white rounded-[32px] p-8 shadow-2xl animate-slide-up text-right">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-black text-gray-900">تغيير كلمة المرور</h3>
+                <button onclick="closePasswordModal()"
+                    class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-5">
+                <div id="password-error" class="hidden bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-100"></div>
+                
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-500">كلمة المرور الحالية</label>
+                    <input id="current-password" type="password" 
+                        class="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary font-bold" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-500">كلمة المرور الجديدة</label>
+                    <input id="new-password" type="password" 
+                        class="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary font-bold" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-500">تأكيد كلمة المرور الجديدة</label>
+                    <input id="confirm-password" type="password" 
+                        class="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary font-bold" />
+                </div>
+
+                <button onclick="handlePasswordChange()" id="save-password-btn"
+                    class="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-orange-100 hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">key</span>
+                    حفظ التغيير
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let currentMode = 'add';
+        let currentEditId = null;
+        let currentDeleteId = null;
+
+        window.addEventListener('load', async () => {
+            const token = localStorage.getItem('mazaki_token');
+            if (!token) {
+                document.getElementById('logged-out-view').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('logged-in-view').classList.remove('hidden');
+
+            try {
+                // Load zones
+                const zoneRes = await fetch('/api/delivery-zones');
+                if (zoneRes.ok) {
+                    const zones = await zoneRes.json();
+                    const zoneSelect = document.getElementById('edit-zone');
+                    if (zoneSelect) {
+                        zoneSelect.innerHTML = '<option value="">غير محدد</option>';
+                        zones.forEach(z => {
+                            const opt = document.createElement('option');
+                            opt.value = z.zone_name;
+                            opt.textContent = z.zone_name;
+                            zoneSelect.appendChild(opt);
+                        });
+                    }
+                }
+
+                // Load user data
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const user = data.user;
+                    if (user) {
+                        document.getElementById('user-display-name').innerText = user.full_name || '...';
+                        document.getElementById('user-display-phone').innerText = user.phone || '...';
+                        document.getElementById('edit-name').value = user.full_name || '';
+                        document.getElementById('edit-email').value = user.email || '';
+                        document.getElementById('edit-phone').value = user.phone || '';
+                        document.getElementById('edit-zone').value = user.delivery_zone || '';
+                        localStorage.setItem('mazaki_user', JSON.stringify(user));
+                        renderSavedAddresses();
+                    }
+                } else {
+                    logout();
+                }
+            } catch (err) { 
+                console.error('Profile Load Error:', err);
+            }
+        });
+
+        // --- Address Management ---
+        window.openAddressModal = function (mode = 'add', id = null, currentText = '') {
+            currentMode = mode;
+            currentEditId = id;
+            document.getElementById('modal-title').innerText = mode === 'add' ? 'إضافة عنوان جديد' : 'تعديل العنوان';
+            document.getElementById('modal-address-input').value = currentText;
+            const modal = document.getElementById('address-modal');
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+        }
+
+        window.closeAddressModal = function () {
+            const modal = document.getElementById('address-modal');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+
+        window.handleAddressSave = async function () {
+            const newAddress = document.getElementById('modal-address-input').value.trim();
+            if (!newAddress) {
+                alert('يرجى إدخال العنوان');
+                return;
+            }
+            const btn = document.getElementById('save-address-btn');
+            btn.disabled = true;
+            btn.innerText = 'جاري الحفظ...';
+
+            const token = localStorage.getItem('mazaki_token');
+            const url = currentMode === 'add' ? '/api/users/addresses' : `/api/users/addresses/${currentEditId}`;
+            const method = currentMode === 'add' ? 'POST' : 'PATCH';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ address_text: newAddress })
+                });
+
+                if (res.ok) {
+                    await renderSavedAddresses();
+                    closeAddressModal();
+                    if (typeof showToast === 'function') showToast(currentMode === 'add' ? 'تم إضافة العنوان بنجاح' : 'تم تحديث العنوان بنجاح');
+                } else {
+                    const errData = await res.json();
+                    alert(errData.message || 'فشل الحفظ');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('خطأ في الاتصال');
+            }
+            btn.disabled = false;
+            btn.innerText = 'حفظ العنوان';
+        }
+
+        window.openDeleteModal = function(id) {
+            currentDeleteId = id;
+            const modal = document.getElementById('delete-confirm-modal');
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+        }
+
+        window.closeDeleteModal = function() {
+            const modal = document.getElementById('delete-confirm-modal');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+
+        window.confirmDelete = async function() {
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.disabled = true;
+            btn.innerText = 'جاري الحذف...';
+
+            try {
+                const token = localStorage.getItem('mazaki_token');
+                const res = await fetch(`/api/users/addresses/${currentDeleteId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    await renderSavedAddresses();
+                    closeDeleteModal();
+                    if (typeof showToast === 'function') showToast('تم حذف العنوان بنجاح');
+                } else {
+                    const errData = await res.json();
+                    alert(errData.message || 'فشل الحذف');
+                }
+            } catch (err) { 
+                console.error(err);
+                alert('خطأ في الاتصال');
+            }
+            btn.disabled = false;
+            btn.innerText = 'نعم، حذف';
+        }
+
+        async function renderSavedAddresses() {
+            const token = localStorage.getItem('mazaki_token');
+            const container = document.getElementById('saved-addresses-list');
+            const addButton = `<div onclick="openAddressModal('add')" class="border-2 border-dashed border-gray-100 rounded-2xl p-6 flex flex-col items-center justify-center text-gray-400 gap-2 hover:bg-gray-50 transition-all cursor-pointer">
+                                <span class="material-symbols-outlined text-4xl">add_circle</span>
+                                <span class="font-bold">إضافة عنوان جديد</span>
+                            </div>`;
+
+            if (!container) return;
+
+            try {
+                const res = await fetch('/api/users/addresses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const addresses = await res.json();
+                    if (addresses.length > 0) {
+                        container.innerHTML = addresses.map((addr, idx) => `
+                            <div class="bg-white border border-gray-100 rounded-2xl p-6 relative group hover:border-primary/30 transition-all shadow-sm">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-primary shrink-0">
+                                        <span class="material-symbols-outlined">location_on</span>
+                                    </div>
+                                    <div class="flex-1 text-right">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h4 class="font-bold text-gray-900">عنوان ${idx + 1}</h4>
+                                            <div class="flex gap-2">
+                                                <button onclick="openAddressModal('edit', ${addr.id}, '${addr.address_text.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
+                                                    <span class="material-symbols-outlined text-sm">edit</span>
+                                                </button>
+                                                <button onclick="openDeleteModal(${addr.id})" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
+                                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 leading-relaxed">${addr.address_text}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('') + addButton;
+                    } else {
+                        container.innerHTML = addButton;
+                    }
+                } else {
+                    container.innerHTML = addButton;
+                }
+            } catch (err) { 
+                console.error('Render Error:', err);
+                container.innerHTML = addButton;
+            }
+        }
+
+        // --- Profile Management ---
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-profile-btn');
+            btn.disabled = true;
+            btn.innerText = 'جاري الحفظ...';
+
+            try {
+                const res = await fetch(`/api/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('mazaki_token')}`
+                    },
+                    body: JSON.stringify({
+                        full_name: document.getElementById('edit-name').value,
+                        email: document.getElementById('edit-email').value,
+                        delivery_zone: document.getElementById('edit-zone').value
+                    })
+                });
+                if (res.ok) {
+                    if (typeof showToast === 'function') showToast('تم حفظ التغييرات بنجاح');
+                    else alert('تم حفظ التغييرات بنجاح');
+                } else {
+                    alert('فشل التحديث');
+                }
+            } catch (err) { console.error(err); }
+            btn.disabled = false;
+            btn.innerText = 'حفظ التغييرات';
+        });
+
+        // --- Password Management ---
+        window.openPasswordModal = function() {
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+            document.getElementById('password-error').classList.add('hidden');
+            const modal = document.getElementById('password-modal');
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+        }
+
+        window.closePasswordModal = function() {
+            const modal = document.getElementById('password-modal');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+
+        window.handlePasswordChange = async function() {
+            const currentPass = document.getElementById('current-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+            const errorDiv = document.getElementById('password-error');
+            
+            errorDiv.classList.add('hidden');
+
+            if (!currentPass || !newPass || !confirmPass) {
+                errorDiv.innerText = 'يرجى ملء جميع الحقول';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                errorDiv.innerText = 'كلمة المرور الجديدة وتأكيدها غير متطابقين';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            if (newPass.length < 8) {
+                errorDiv.innerText = 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            const btn = document.getElementById('save-password-btn');
+            btn.disabled = true;
+            btn.innerText = 'جاري تغيير كلمة المرور...';
+
+            try {
+                const token = localStorage.getItem('mazaki_token');
+                const res = await fetch('/api/users/profile/change-password', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        currentPassword: currentPass,
+                        newPassword: newPass,
+                        confirmPassword: confirmPass
+                    })
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    closePasswordModal();
+                    if (typeof showToast === 'function') showToast('تم تغيير كلمة المرور بنجاح');
+                    else alert('تم تغيير كلمة المرور بنجاح');
+                } else {
+                    errorDiv.innerText = result.message || 'فشل التغيير';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                errorDiv.innerText = 'خطأ في الاتصال بالسيرفر';
+                errorDiv.classList.remove('hidden');
+            }
+            btn.disabled = false;
+            btn.innerText = 'حفظ التغيير';
+        }
+
+        window.logout = function() {
+            localStorage.removeItem('mazaki_user');
+            localStorage.removeItem('mazaki_token');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

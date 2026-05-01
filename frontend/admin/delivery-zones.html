@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>إدارة مناطق التوصيل - بوفية مذاقي</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#f57c00",
+                        "primary-container": "#e65100",
+                        "background": "#f4faff",
+                        "on-background": "#111d23",
+                        "surface": "#ffffff",
+                        "on-surface": "#111d23",
+                        "on-surface-variant": "#574235",
+                        "surface-container": "#e3f0f8",
+                        "surface-container-low": "#e9f6fd",
+                        "surface-dim": "#cfdce4",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Almarai', sans-serif; }
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(0,0,0,0.05); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+    <!-- SideNavBar -->
+    <aside class="bg-gray-50 dark:bg-gray-950 font-sans text-sm font-medium h-screen w-64 border-l border-gray-200 dark:border-gray-800 hidden md:flex flex-col fixed right-0 top-0 h-full z-40">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <h1 class="text-xl font-black text-gray-900 dark:text-white">بوفية مذاقي</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">لوحة الإدارة</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col gap-2 overflow-y-auto" id="admin-nav">
+            <!-- JS filled -->
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 md:mr-64 w-full min-h-screen">
+        <header class="bg-white/95 border-b border-gray-100 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm backdrop-blur-md">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden text-gray-600">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="font-black text-lg text-on-background">مناطق التوصيل</h2>
+            </div>
+            <div class="flex items-center gap-4" id="admin-name-display">المدير</div>
+        </header>
+
+        <div class="p-6 md:p-10 space-y-8">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-black">إدارة مناطق التوصيل</h1>
+                <button onclick="openAddModal()" class="bg-primary text-white rounded-xl px-6 py-3 flex items-center gap-2 shadow-lg shadow-orange-100 hover:bg-primary-container transition-all active:scale-95 font-bold">
+                    <span class="material-symbols-outlined">add_location</span>
+                    إضافة منطقة جديدة
+                </button>
+            </div>
+
+            <section class="bg-white rounded-2xl ambient-shadow border border-gray-50 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right">
+                        <thead>
+                            <tr class="bg-gray-50/50 text-[12px] font-black text-gray-400 border-b border-gray-100 uppercase tracking-wider">
+                                <th class="px-8 py-5">اسم المنطقة</th>
+                                <th class="px-8 py-5">رسوم التوصيل</th>
+                                <th class="px-8 py-5">الحد الأدنى للمجاني</th>
+                                <th class="px-8 py-5">وقت التوصيل</th>
+                                <th class="px-8 py-5">الحالة</th>
+                                <th class="px-8 py-5 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="zones-list-body" class="divide-y divide-gray-50">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="zone-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl scale-in">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modal-title" class="text-xl font-black text-on-background">إضافة منطقة توصيل</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="zone-form" class="space-y-4">
+                <input type="hidden" id="zone-id">
+                <div>
+                    <label class="block text-sm font-bold mb-1">اسم الحي / المنطقة</label>
+                    <input type="text" id="zone_name" required class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1">رسوم التوصيل</label>
+                        <input type="number" id="delivery_fee" required class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">الحد الأدنى للمجاني</label>
+                        <input type="number" id="free_delivery_minimum" required class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">وقت التوصيل المتوقع (مثال: 20-30 دقيقة)</label>
+                    <input type="text" id="estimated_delivery_time" required class="w-full bg-gray-50 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 transition-all">
+                </div>
+                <div class="flex items-center gap-2 py-2">
+                    <input type="checkbox" id="is_active" checked class="rounded text-primary focus:ring-primary/20">
+                    <label for="is_active" class="text-sm font-bold">تنشيط المنطقة</label>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white rounded-xl py-4 font-black shadow-lg shadow-orange-100 hover:bg-primary-container transition-all">حفظ البيانات</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isAdmin()) return window.location.href = 'login.html';
+            loadZones();
+        });
+
+        async function loadZones() {
+            try {
+                const res = await fetch('/api/delivery-zones/admin', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                const zones = await res.json();
+                const container = document.getElementById('zones-list-body');
+                container.innerHTML = zones.map(zone => `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-8 py-5 font-black text-gray-900">${zone.zone_name}</td>
+                        <td class="px-8 py-5 font-bold text-gray-600">${zone.delivery_fee} ريال</td>
+                        <td class="px-8 py-5 font-bold text-gray-600">${zone.free_delivery_minimum} ريال</td>
+                        <td class="px-8 py-5 text-gray-400 font-bold text-xs">${zone.estimated_delivery_time}</td>
+                        <td class="px-8 py-5">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black border ${zone.is_active ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}">
+                                ${zone.is_active ? 'نشط' : 'غير نشط'}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5">
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick='editZone(${JSON.stringify(zone)})' class="text-gray-300 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </button>
+                                <button onclick="deleteZone(${zone.id})" class="text-gray-300 hover:text-red-500 transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        const modal = document.getElementById('zone-modal');
+        function openAddModal() {
+            document.getElementById('modal-title').innerText = 'إضافة منطقة توصيل';
+            document.getElementById('zone-form').reset();
+            document.getElementById('zone-id').value = '';
+            modal.classList.remove('hidden');
+        }
+
+        function editZone(zone) {
+            document.getElementById('modal-title').innerText = 'تعديل منطقة توصيل';
+            document.getElementById('zone-id').value = zone.id;
+            document.getElementById('zone_name').value = zone.zone_name;
+            document.getElementById('delivery_fee').value = zone.delivery_fee;
+            document.getElementById('free_delivery_minimum').value = zone.free_delivery_minimum;
+            document.getElementById('estimated_delivery_time').value = zone.estimated_delivery_time;
+            document.getElementById('is_active').checked = zone.is_active == 1;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        document.getElementById('zone-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('zone-id').value;
+            const data = {
+                zone_name: document.getElementById('zone_name').value,
+                delivery_fee: parseFloat(document.getElementById('delivery_fee').value),
+                free_delivery_minimum: parseFloat(document.getElementById('free_delivery_minimum').value),
+                estimated_delivery_time: document.getElementById('estimated_delivery_time').value,
+                is_active: document.getElementById('is_active').checked ? 1 : 0
+            };
+
+            const url = id ? `/api/delivery-zones/admin/${id}` : '/api/delivery-zones/admin';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    closeModal();
+                    loadZones();
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        async function deleteZone(id) {
+            if (!confirm('هل أنت متأكد من حذف هذه المنطقة؟')) return;
+            try {
+                const res = await fetch(`/api/delivery-zones/admin/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                if (res.ok) loadZones();
+            } catch (err) { console.error(err); }
+        }
+    </script>
+</body>
+</html>

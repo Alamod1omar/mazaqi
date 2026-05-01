@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>بوفية مذاقي - الأرشيف</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- We'll use a simpler approach for Arabic support in PDF by providing an Arabic font if possible, 
+         but for this task we will focus on the structure and use jspdf's autotable which is better for reports. -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#964900",
+                        "background": "#f4faff",
+                        "surface": "#ffffff"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Almarai', sans-serif;
+        }
+
+        @media (max-width: 640px) {
+            .hide-mobile { display: none !important; }
+        }
+    </style>
+</head>
+
+<body class="bg-background text-gray-800 min-h-screen flex">
+    <aside
+        class="bg-white h-screen w-64 border-l border-gray-100 fixed right-0 top-0 z-40 hidden md:flex flex-col shadow-xl overflow-y-auto">
+        <div class="p-5 border-b border-gray-100 hidden md:block">
+            <h1 class="text-xl font-black text-gray-900">بوفية مذاقي</h1>
+            <p class="text-xs text-gray-400 mt-1">لوحة الإدارة</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col gap-2 overflow-y-auto" id="admin-nav">
+            <!-- JS filled -->
+        </nav>
+    </aside>
+
+    <div class="flex-1 md:mr-64 min-h-screen flex flex-col overflow-x-hidden">
+        <header
+            class="bg-white/95 backdrop-blur-md border-b border-gray-100 py-4 px-4 md:px-6 sticky top-0 z-20 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shadow-sm">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleAdminSidebar()" class="md:hidden text-gray-600 p-1">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="text-lg font-black text-gray-900">أرشيف الطلبات</h2>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <button onclick="openReportModal()"
+                    class="flex-1 md:flex-none bg-gray-800 hover:bg-gray-900 text-white px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-bold">
+                    <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+                    إنشاء تقرير
+                </button>
+                <button onclick="confirmArchive()"
+                    class="flex-1 md:flex-none bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all text-xs font-bold">
+                    <span class="material-symbols-outlined text-sm">archive</span>
+                    أرشفة الطلبات
+                </button>
+            </div>
+        </header>
+
+        <main class="p-4 md:p-8 space-y-6">
+            <!-- Analytics Header & Filter -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">analytics</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm md:text-lg" id="analytics-title">إحصائيات الأرشيف (كل الأوقات)</h3>
+                        <p class="text-[10px] md:text-xs text-gray-400">ملخص سريع للبيانات المارشفة</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
+                    <select id="analytics-month" onchange="loadAnalytics()"
+                        class="border-none bg-transparent text-xs md:text-sm font-bold focus:ring-0">
+                        <option value="">كل الأشهر</option>
+                        <option value="01">يناير</option>
+                        <option value="02">فبراير</option>
+                        <option value="03">مارس</option>
+                        <option value="04">أبريل</option>
+                        <option value="05">مايو</option>
+                        <option value="06">يونيو</option>
+                        <option value="07">يوليو</option>
+                        <option value="08">أغسطس</option>
+                        <option value="09">سبتمبر</option>
+                        <option value="10">أكتوبر</option>
+                        <option value="11">نوفمبر</option>
+                        <option value="12">ديسمبر</option>
+                    </select>
+                    <input type="number" id="analytics-year" onchange="loadAnalytics()" value="2026"
+                        class="w-20 border-none bg-transparent text-xs md:text-sm font-bold focus:ring-0">
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4" id="analytics-grid">
+                <!-- Analytics Cards will be loaded here -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-pulse h-24"></div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-pulse h-24"></div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-pulse h-24"></div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 animate-pulse h-24"></div>
+            </div>
+
+            <!-- Search & Filter Section -->
+            <section class="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-2 mb-4 text-orange-600 font-bold text-sm">
+                    <span class="material-symbols-outlined text-lg">filter_list</span>
+                    <h3>البحث والتصفية</h3>
+                </div>
+                <form id="search-form" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">رقم الطلب</label>
+                        <input type="text" name="order_no" placeholder="مثال: 12345"
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">اسم العميل</label>
+                        <input type="text" name="name" placeholder="ابحث بالاسم..."
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">رقم الهاتف</label>
+                        <input type="text" name="phone" placeholder="05xxxxxxxx"
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">الحي / المنطقة</label>
+                        <input type="text" name="district" placeholder="اسم الحي..."
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">من تاريخ</label>
+                        <input type="date" name="date_from"
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">إلى تاريخ</label>
+                        <input type="date" name="date_to"
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] md:text-xs text-gray-500 pr-1">الحالة</label>
+                        <select name="status"
+                            class="w-full border-gray-200 rounded-xl text-sm focus:ring-orange-500 focus:border-orange-500">
+                            <option value="">الكل</option>
+                            <option value="مكتمل">مكتمل</option>
+                            <option value="ملغي">ملغي</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit"
+                            class="flex-1 bg-orange-600 text-white py-2 rounded-xl font-bold hover:bg-orange-700 transition-colors text-sm">
+                            بحث
+                        </button>
+                        <button type="reset" onclick="resetResults()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                            ضبط
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Results Section -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 md:p-6 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-sm">نتائج البحث</h3>
+                    <span id="results-count" class="text-xs text-gray-500"></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right">
+                        <thead class="bg-gray-50 text-[10px] md:text-xs font-bold uppercase text-gray-500 border-b whitespace-nowrap">
+                            <tr>
+                                <th class="px-3 md:px-6 py-3 text-right">رقم الطلب</th>
+                                <th class="px-3 md:px-6 py-3 text-right">العميل</th>
+                                <th class="px-3 md:px-6 py-3 text-right hide-mobile">الحي</th>
+                                <th class="px-3 md:px-6 py-3 text-right">الحالة</th>
+                                <th class="px-3 md:px-6 py-3 text-right">الإجمالي</th>
+                                <th class="px-3 md:px-6 py-3 text-right hide-mobile">تاريخ الطلب</th>
+                                <th class="px-3 md:px-6 py-3 text-right hide-mobile">تاريخ الأرشفة</th>
+                                <th class="px-3 md:px-6 py-3 text-center">عرض</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body" class="divide-y text-sm">
+                            <tr>
+                                <td colspan="8" class="px-6 py-20 text-center text-gray-500">
+                                    <div class="flex flex-col items-center gap-4">
+                                        <span class="material-symbols-outlined text-5xl opacity-20">inventory_2</span>
+                                        <p>لا توجد طلبات معروضة حالياً.<br><span class="text-xs">استخدم محرك البحث أو
+                                                الفلاتر لعرض الطلبات المؤرشفة.</span></p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div id="pagination-container" class="p-4 border-t bg-gray-50/50 flex items-center justify-between">
+                    <div class="text-xs text-gray-500 font-bold" id="pagination-info">صفحة 1 من 1</div>
+                    <div class="flex gap-2" id="pagination-buttons">
+                        <!-- Buttons filled by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Best Products Section -->
+            <section class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-2 mb-6 text-orange-600 font-bold">
+                    <span class="material-symbols-outlined">trending_up</span>
+                    <h3>أفضل المنتجات مبيعاً (من الأرشيف)</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right">
+                        <thead class="bg-gray-50 text-xs font-bold border-b text-gray-500 whitespace-nowrap">
+                            <tr>
+                                <th class="px-6 py-4 text-right">المنتج</th>
+                                <th class="px-6 py-4 text-center">الكمية المباعة</th>
+                                <th class="px-6 py-4 text-center">عدد الطلبات</th>
+                                <th class="px-6 py-4 text-left">إجمالي الإيرادات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="best-products-body" class="divide-y text-sm">
+                            <!-- JS filled -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Report Selection Modal -->
+    <div id="report-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeReportModal()"></div>
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 shadow-2xl scale-in">
+            <div class="w-16 h-16 bg-gray-100 text-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-4xl">analytics</span>
+            </div>
+            <h3 class="text-xl font-bold text-center mb-6">إعداد تقرير المبيعات</h3>
+
+            <div class="space-y-4 mb-8">
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">نوع التقرير</label>
+                    <select id="report-type" onchange="toggleReportPickers()"
+                        class="w-full border-gray-200 rounded-xl focus:ring-orange-500 focus:border-orange-500">
+                        <option value="daily">تقرير يومي</option>
+                        <option value="monthly">تقرير شهري</option>
+                        <option value="yearly">تقرير سنوي</option>
+                        <option value="custom">نطاق مخصص</option>
+                    </select>
+                </div>
+
+                <div id="daily-picker" class="report-picker">
+                    <label class="text-xs text-gray-500 mb-1 block">اختر التاريخ</label>
+                    <input type="date" id="report-date-daily" class="w-full border-gray-200 rounded-xl">
+                </div>
+
+                <div id="monthly-picker" class="report-picker hidden">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">الشهر</label>
+                            <select id="report-month" class="w-full border-gray-200 rounded-xl">
+                                <option value="01">يناير</option>
+                                <option value="02">فبراير</option>
+                                <option value="03">مارس</option>
+                                <option value="04">أبريل</option>
+                                <option value="05">مايو</option>
+                                <option value="06">يونيو</option>
+                                <option value="07">يوليو</option>
+                                <option value="08">أغسطس</option>
+                                <option value="09">سبتمبر</option>
+                                <option value="10">أكتوبر</option>
+                                <option value="11">نوفمبر</option>
+                                <option value="12">ديسمبر</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">السنة</label>
+                            <input type="number" id="report-month-year" value="2026"
+                                class="w-full border-gray-200 rounded-xl">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="yearly-picker" class="report-picker hidden">
+                    <label class="text-xs text-gray-500 mb-1 block">السنة</label>
+                    <input type="number" id="report-year" value="2026" class="w-full border-gray-200 rounded-xl">
+                </div>
+
+                <div id="custom-picker" class="report-picker hidden">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">من</label>
+                            <input type="date" id="report-custom-start" class="w-full border-gray-200 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">إلى</label>
+                            <input type="date" id="report-custom-end" class="w-full border-gray-200 rounded-xl">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="closeReportModal()"
+                    class="flex-1 px-6 py-3 border border-gray-200 rounded-2xl hover:bg-gray-50 font-bold">إلغاء</button>
+                <button onclick="generatePDFReport()" id="generate-report-btn"
+                    class="flex-1 px-6 py-3 bg-gray-800 text-white rounded-2xl hover:bg-gray-900 font-bold shadow-lg shadow-gray-200 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">download</span>
+                    <span>تحميل التقرير</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="archive-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 shadow-2xl scale-in">
+            <div
+                class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-4xl">archive</span>
+            </div>
+            <h3 class="text-xl font-bold text-center mb-4">تأكيد الأرشفة</h3>
+            <p class="text-gray-500 text-center mb-8 leading-relaxed">
+                هل أنت متأكد من رغبتك في أرشفة جميع الطلبات المكتملة والملغية؟
+                <br>
+                <span class="text-sm font-bold text-orange-600">هذا الإجراء سيقوم بنقلها من قائمة الطلبات النشطة إلى
+                    الأرشيف.</span>
+            </p>
+            <div class="flex gap-4">
+                <button onclick="closeModal()"
+                    class="flex-1 px-6 py-3 border border-gray-200 rounded-2xl hover:bg-gray-50 font-bold">تراجع</button>
+                <button onclick="executeArchive()" id="confirm-btn"
+                    class="flex-1 px-6 py-3 bg-orange-600 text-white rounded-2xl hover:bg-orange-700 font-bold shadow-lg shadow-orange-200">نعم،
+                    أرشفة</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js?v=1.2"></script>
+    <script src="../js/admin-sidebar.js?v=1.2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isAdmin()) return window.location.href = 'login.html';
+            await loadAnalytics();
+        });
+
+        async function loadAnalytics() {
+            try {
+                const month = document.getElementById('analytics-month').value;
+                const year = document.getElementById('analytics-year').value;
+                let url = '/api/admin/archive/analytics';
+                if (month && year) url += `?month=${month}&year=${year}`;
+
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                if (month && year) {
+                    const monthNames = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+                    document.getElementById('analytics-title').innerText = `إحصائيات الأرشيف لعام ${year} - شهر ${monthNames[parseInt(month)]}`;
+                } else {
+                    document.getElementById('analytics-title').innerText = "إحصائيات الأرشيف (كل الأوقات)";
+                }
+
+                const data = await res.json();
+                renderAnalytics(data);
+                renderBestProducts(data.best_products);
+            } catch (err) { console.error(err); }
+        }
+
+        function renderAnalytics(data) {
+            const grid = document.getElementById('analytics-grid');
+            const cards = [
+                { title: 'إجمالي المؤرشف', value: data.total_archived, icon: 'inventory_2', color: 'blue' },
+                { title: 'طلبات مكتملة', value: data.completed_count, icon: 'check_circle', color: 'green' },
+                { title: 'طلبات ملغية', value: data.cancelled_count, icon: 'cancel', color: 'red' },
+                { title: 'إجمالي المبيعات', value: `${(data.total_sales || 0).toLocaleString()} ريال`, icon: 'payments', color: 'orange' },
+                { title: 'متوسط قيمة الطلب', value: `${Math.round(data.avg_order_value || 0)} ريال`, icon: 'analytics', color: 'purple' },
+                { title: 'رسوم التوصيل', value: `${(data.total_delivery_fees || 0).toLocaleString()} ريال`, icon: 'local_shipping', color: 'teal' },
+                { title: 'المنطقة الأكثر طلباً', value: data.top_zone || 'غير محدد', icon: 'map', color: 'indigo' },
+                { title: 'طريقة الدفع الأكثر استخداماً', value: data.top_payment_method === 'cash_on_delivery' ? 'كاش' : data.top_payment_method, icon: 'credit_card', color: 'amber' }
+            ];
+
+            grid.innerHTML = cards.map(card => `
+                <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-${card.color}-50 text-${card.color}-600 rounded-xl flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-sm md:text-[24px]">${card.icon}</span>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] md:text-xs text-gray-500 font-bold mb-0.5 md:mb-1 truncate">${card.title}</p>
+                        <p class="text-sm md:text-lg font-black text-gray-900 truncate">${card.value}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderBestProducts(products) {
+            const body = document.getElementById('best-products-body');
+            if (!products || products.length === 0) {
+                body.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400">لا توجد بيانات متاحة</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = products.map(p => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 font-bold">${p.product_name}</td>
+                    <td class="px-6 py-4 text-center font-mono">${p.total_quantity}</td>
+                    <td class="px-6 py-4 text-center font-mono">${p.order_count}</td>
+                    <td class="px-6 py-4 text-left font-bold text-orange-600">${p.revenue.toLocaleString()} ريال</td>
+                </tr>
+            `).join('');
+        }
+
+        let currentPage = 1;
+
+        document.getElementById('search-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await fetchArchive(1);
+        };
+
+        async function fetchArchive(page = 1) {
+            currentPage = page;
+            const formData = new FormData(document.getElementById('search-form'));
+            const params = new URLSearchParams(formData);
+            params.set('page', page);
+
+            const resultsBody = document.getElementById('results-body');
+            resultsBody.innerHTML = `<tr><td colspan="8" class="px-6 py-20 text-center"><div class="animate-spin inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full"></div></td></tr>`;
+
+            try {
+                const res = await fetch(`/api/admin/archive/search?${params.toString()}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                const data = await res.json(); // Data format: { orders, total, page, totalPages }
+                renderResults(data);
+            } catch (err) {
+                console.error(err);
+                resultsBody.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-red-500">حدث خطأ أثناء البحث</td></tr>`;
+            }
+        }
+
+        function renderResults(data) {
+            const body = document.getElementById('results-body');
+            const count = document.getElementById('results-count');
+            const orders = data.orders;
+
+            if (!orders || orders.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-20 text-center text-gray-500">
+                            <div class="flex flex-col items-center gap-4">
+                                <span class="material-symbols-outlined text-5xl opacity-20">search_off</span>
+                                <p>لم يتم العثور على طلبات مؤرشفة بهذا البحث.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                count.innerText = '';
+                document.getElementById('pagination-container').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('pagination-container').classList.remove('hidden');
+            count.innerText = `${data.total} طلب مؤرشف`;
+
+            body.innerHTML = orders.map(ord => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 font-mono text-orange-600 font-bold">#${ord.id.toString().padStart(6, '0')}</td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold">${ord.customer_name}</div>
+                        <div class="text-xs text-gray-400">${ord.customer_phone}</div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">${ord.address || '-'}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold ${ord.status === 'مكتمل' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                            ${ord.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 font-bold">${ord.total} ريال</td>
+                    <td class="px-6 py-4 text-xs text-gray-400">${new Date(ord.created_at).toLocaleString('ar-SA')}</td>
+                    <td class="px-6 py-4 text-xs text-gray-400">${new Date(ord.archived_at).toLocaleString('ar-SA')}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="window.location.href='order-details.html?id=${ord.id}'" class="p-2 hover:bg-orange-50 rounded-lg text-gray-400 hover:text-orange-600 transition-colors">
+                            <span class="material-symbols-outlined text-sm">visibility</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderPagination(data);
+        }
+
+        function renderPagination(data) {
+            const container = document.getElementById('pagination-buttons');
+            const info = document.getElementById('pagination-info');
+
+            info.innerText = `صفحة ${data.page} من ${data.totalPages}`;
+
+            let html = '';
+
+            // Previous Button
+            html += `<button onclick="fetchArchive(${data.page - 1})" ${data.page === 1 ? 'disabled' : ''} class="px-3 py-1.5 border rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">chevron_right</span> السابق
+            </button>`;
+
+            // Next Button
+            html += `<button onclick="fetchArchive(${data.page + 1})" ${data.page === data.totalPages ? 'disabled' : ''} class="px-3 py-1.5 border rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xs font-bold flex items-center gap-1">
+                التالي <span class="material-symbols-outlined text-xs">chevron_left</span>
+            </button>`;
+
+            container.innerHTML = html;
+        }
+
+        function resetResults() {
+            document.getElementById('results-body').innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-6 py-20 text-center text-gray-500">
+                        <div class="flex flex-col items-center gap-4">
+                            <span class="material-symbols-outlined text-5xl opacity-20">inventory_2</span>
+                            <p>لا توجد طلبات معروضة حالياً.<br><span class="text-xs">استخدم محرك البحث أو الفلاتر لعرض الطلبات المؤرشفة.</span></p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('results-count').innerText = '';
+        }
+
+        function confirmArchive() {
+            document.getElementById('archive-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('archive-modal').classList.add('hidden');
+        }
+
+        async function executeArchive() {
+            const btn = document.getElementById('confirm-btn');
+            btn.disabled = true;
+            btn.innerText = 'جاري الأرشفة...';
+
+            try {
+                const res = await fetch('/api/admin/archive/completed-cancelled', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+                const result = await res.json();
+                alert(result.message);
+                if (result.success) {
+                    closeModal();
+                    await loadAnalytics();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('حدث خطأ أثناء الأرشفة');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'نعم، أرشفة';
+            }
+        }
+
+        // --- PDF Report Generation Logic ---
+
+        function openReportModal() {
+            document.getElementById('report-modal').classList.remove('hidden');
+            // Set current year to pickers
+            const year = new Date().getFullYear();
+            document.getElementById('report-month-year').value = year;
+            document.getElementById('report-year').value = year;
+            // Set today to daily
+            document.getElementById('report-date-daily').valueAsDate = new Date();
+        }
+
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+        }
+
+        function toggleReportPickers() {
+            const type = document.getElementById('report-type').value;
+            document.querySelectorAll('.report-picker').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${type}-picker`).classList.remove('hidden');
+        }
+
+        async function generatePDFReport() {
+            const btn = document.getElementById('generate-report-btn');
+            const type = document.getElementById('report-type').value;
+            let startDate, endDate, periodText;
+
+            if (type === 'daily') {
+                const date = document.getElementById('report-date-daily').value;
+                if (!date) return alert('يرجى اختيار التاريخ');
+                startDate = date;
+                endDate = date;
+                const d = new Date(date);
+                periodText = d.toLocaleDateString('ar-SA', { day: 'numeric', month: 'long', year: 'numeric' });
+            } else if (type === 'monthly') {
+                const month = document.getElementById('report-month').value;
+                const year = document.getElementById('report-month-year').value;
+                startDate = `${year}-${month}-01`;
+                const lastDay = new Date(year, parseInt(month), 0).getDate();
+                endDate = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+                const monthNames = ["", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+                periodText = `شهر ${monthNames[parseInt(month)]} لعام ${year}`;
+            } else if (type === 'yearly') {
+                const year = document.getElementById('report-year').value;
+                startDate = `${year}-01-01`;
+                endDate = `${year}-12-31`;
+                periodText = `عام ${year}`;
+            } else {
+                startDate = document.getElementById('report-custom-start').value;
+                endDate = document.getElementById('report-custom-end').value;
+                if (!startDate || !endDate) return alert('يرجى اختيار نطاق التواريخ');
+                const s = new Date(startDate);
+                const e = new Date(endDate);
+                periodText = `من ${s.toLocaleDateString('ar-SA')} إلى ${e.toLocaleDateString('ar-SA')}`;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> جاري التجهيز...';
+
+            try {
+                const res = await fetch(`/api/admin/archive/report-data?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('mazaki_admin_token')}` }
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.message || 'فشل جلب بيانات التقرير');
+                }
+
+                const data = await res.json();
+
+                // Create a temporary element for the report
+                const reportEl = document.createElement('div');
+                reportEl.style.direction = 'rtl';
+                reportEl.style.padding = '40px';
+                reportEl.style.fontFamily = "'Almarai', sans-serif";
+                reportEl.className = 'bg-white text-gray-800';
+
+                reportEl.innerHTML = `
+                    <div style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px;">
+                        <h1 style="font-size: 28px; color: #964900; margin-bottom: 5px;">بوفية مذاقي</h1>
+                        <h2 style="font-size: 20px; color: #4b5563;">تقرير ملخص المبيعات والطلبات</h2>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 40px; font-size: 14px; background: #f9fafb; padding: 15px; border-radius: 12px;">
+                        <div>
+                            <p><strong>نوع التقرير:</strong> ${type === 'daily' ? 'يومي' : type === 'monthly' ? 'شهري' : type === 'yearly' ? 'سنوي' : 'مخصص'}</p>
+                            <p><strong>الفترة:</strong> ${periodText}</p>
+                        </div>
+                        <div style="text-align: left;">
+                            <p><strong>تاريخ الإصدار:</strong> ${data.generated_at}</p>
+                            <p><strong>بواسطة:</strong> ${data.admin_name}</p>
+                        </div>
+                    </div>
+
+                    <h3 style="border-right: 4px solid #964900; padding-right: 10px; margin-bottom: 20px;">ملخص الفترة</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 16px;">
+                        <tr style="background: #f3f4f6;">
+                            <th style="padding: 15px; border: 1px solid #e5e7eb; text-align: right;">البيان</th>
+                            <th style="padding: 15px; border: 1px solid #e5e7eb; text-align: right;">القيمة</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb;">إجمالي المبيعات</td>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: bold; color: #964900;">${(data.summary.total_sales || 0).toLocaleString()} ريال</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb;">عدد الطلبات المكتملة</td>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: bold;">${data.summary.completed_count}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb;">عدد الطلبات الملغية</td>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: bold;">${data.summary.cancelled_count}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb;">إجمالي مبلغ التوصيل</td>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: bold;">${(data.summary.total_delivery_fees || 0).toLocaleString()} ريال</td>
+                        </tr>
+                        <tr style="background: #fff7ed;">
+                            <td style="padding: 15px; border: 1px solid #e5e7eb; font-weight: 800; font-size: 18px;">المبلغ الصافي بدون التوصيل</td>
+                            <td style="padding: 15px; border: 1px solid #e5e7eb; font-weight: 800; font-size: 18px; color: #c2410c;">${(data.summary.net_sales || 0).toLocaleString()} ريال</td>
+                        </tr>
+                    </table>
+
+                    <div style="margin-top: 100px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px dashed #eee; padding-top: 20px;">
+                        <p>تم استخراج هذا التقرير آلياً من نظام بوفية مذاقي</p>
+                    </div>
+                `;
+
+                const opt = {
+                    margin: [10, 10],
+                    filename: `Report_${type}_${startDate}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Generate PDF
+                await html2pdf().set(opt).from(reportEl).save();
+                closeReportModal();
+
+            } catch (err) {
+                console.error('PDF Generation Error:', err);
+                alert(`حدث خطأ: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined text-sm">download</span> تحميل التقرير';
+            }
+        }
+    </script>
+</body>
+
+</html>
