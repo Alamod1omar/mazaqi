@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Root package for Mazaki Cafeteria",
   "scripts": {
-    "postinstall": "cd backend && npm install",
+    "postinstall": "cd backend && npm install && npm run seed",
     "start": "cd backend && node server.js"
   },
   "engines": {
